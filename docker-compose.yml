@@ -1,0 +1,65 @@
+services:
+
+    app:
+        build:
+            context: .
+            dockerfile: Dockerfile
+        container_name: se2-app
+        volumes:
+            - .:/app
+            - ~/.m2:/root/.m2
+        ports:
+            - "${APPLICATION_PORT}:${APPLICATION_PORT}"
+        depends_on:
+            - mysql
+        env_file:
+            - .env
+        environment:
+            SPRING_DEVTOOLS_RESTART_ENABLED: "true"  
+        networks:
+            - spring_demo
+
+    mysql:
+        image: mysql:8
+        container_name: se2-db
+        environment:
+            MYSQL_DATABASE: ${MYSQL_DATABASE}
+            MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+            MYSQL_USER: ${MYSQL_USER}
+            MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+        restart: unless-stopped
+
+        volumes:
+            - mysql:/var/lib/mysql/
+        ports:
+            - "${MYSQL_PORT}:${MYSQL_PORT}"
+        env_file:
+            - .env
+        networks: 
+            - spring_demo
+
+    phpmyadmin:
+        image: phpmyadmin/phpmyadmin
+        container_name: se2-db-manager
+        restart: always
+        ports:
+          - "8082:80"
+        environment:
+          PMA_HOST: ${MYSQL_HOST}
+          PMA_USER: ${MYSQL_USER}
+          PMA_PASSWORD: ${MYSQL_PASSWORD}
+        depends_on:
+          - mysql
+        env_file:
+          - .env
+        networks:
+            - spring_demo
+
+
+networks:
+    spring_demo:
+        driver: bridge
+    
+volumes:
+    mysql: 
+        driver: local

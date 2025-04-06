@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Borrowed Books</title>
+</head>
+<body>
+    <h1>Books You've Borrowed</h1>
+
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Title</th>
+                <th>Author</th>
+                <th>ISBN</th>
+                <th>Owner</th>
+                <th>Rating</th>
+                <th>Returned?</th>
+                <th>Return Approved?</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="book : ${borrowedBooks}">
+                <td th:text="${book.title}">Title</td>
+                <td th:text="${book.authorName}">Author</td>
+                <td th:text="${book.isbn}">ISBN</td>
+                <td th:text="${book.ownerName}">Owner</td>
+                <td th:text="${book.rate}">Rate</td>
+                <td th:text="${book.returned ? 'Yes' : 'No'}">Returned</td>
+                <td th:text="${book.returnApproved ? 'Yes' : 'No'}">Approved</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="pagination">
+        <span th:if="${currentPage > 0}">
+            <a th:href="@{/books/borrowed(pageNumber=${currentPage - 1}, pageSize=${pageSize})}">Previous</a>
+        </span>
+
+        <span th:each="i : ${#numbers.sequence(0, totalPages - 1)}">
+            <a th:if="${i != currentPage}"
+               th:href="@{/books/borrowed(pageNumber=${i}, pageSize=${pageSize})}"
+               th:text="${i + 1}">Page</a>
+            <span th:unless="${i != currentPage}" th:text="${i + 1}">Current</span>
+        </span>
+
+        <span th:if="${currentPage < totalPages - 1}">
+            <a th:href="@{/books/borrowed(pageNumber=${currentPage + 1}, pageSize=${pageSize})}">Next</a>
+        </span>
+    </div>
+
+    <div>Total items: <span th:text="${totalItems}">0</span></div>
+</body>
+</html>

@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book Detail</title>
+</head>
+
+<body>
+    <h1 th:text="${book.title}">Book Title</h1>
+    <p><strong>Author:</strong> <span th:text="${book.authorName}"></span></p>
+    <p><strong>ISBN:</strong> <span th:text="${book.isbn}"></span></p>
+    <p><strong>Synopsis:</strong> <span th:text="${book.synopsis}"></span></p>
+    <p><strong>Owner:</strong> <span th:text="${book.ownerName}"></span></p>
+    <p><strong>Rate:</strong> <span th:text="${book.rate}"></span></p>
+    <p><strong>Archived:</strong> <span th:text="${book.archived ? 'Yes' : 'No'}"></span></p>
+    <p><strong>Shareable:</strong> <span th:text="${book.shareable ? 'Yes' : 'No'}"></span></p>
+    <div>
+        <strong>Cover:</strong><br />
+        <img th:if="${book.cover != null}" alt="Book Cover" />
+        <p th:if="${book.cover == null}">No cover image</p>
+    </div>
+</body>
+
+</html>
