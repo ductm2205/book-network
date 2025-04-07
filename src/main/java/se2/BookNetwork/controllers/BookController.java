@@ -141,4 +141,17 @@ public class BookController {
             return "error";
         }
     }
+
+    @GetMapping("/{bookId}/toggleArchieve")
+    public String toggleArchieveStatus(@PathVariable("bookId") Integer bookId, Authentication authentication,
+            Model model) {
+        try {
+            Integer updatedBookId = bookService.updateArchivedStatus(bookId, authentication);
+            model.addAttribute("bookId", updatedBookId);
+            return "redirect:/books/" + updatedBookId;
+        } catch (UnauthorizedOperationException | EntityNotFoundException ex) {
+            model.addAttribute("error", ex.getMessage());
+            return "error";
+        }
+    }
 }

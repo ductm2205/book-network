@@ -15,11 +15,15 @@
     <p><strong>Owner:</strong> <span th:text="${book.ownerName}"></span></p>
     <p><strong>Rate:</strong> <span th:text="${book.rate}"></span></p>
     <p><strong>Archived:</strong> <span th:text="${book.archived ? 'Yes' : 'No'}"></span></p>
+    <a th:href="@{/books/{bookId}/toggleArchieve(bookId=${book.id})}">
+        <button type="button" title="archived"
+            th:text="${book.archived ? 'UnArchived' : 'Archived'}"></button>
+    </a>
+    <p><strong>Shareable:</strong> <span th:text="${book.shareable ? 'Yes' : 'No'}"></span></p>
     <a th:href="@{/books/{bookId}/toggleShareable(bookId=${book.id})}">
         <button type="button" title="shareable"
             th:text="${book.shareable ? 'Make Not Shareable' : 'Make Shareable'}"></button>
     </a>
-    <p><strong>Shareable:</strong> <span th:text="${book.shareable ? 'Yes' : 'No'}"></span></p>
     <div>
         <strong>Cover:</strong><br />
         <img th:if="${book.cover != null}" alt="Book Cover" />

@@ -156,6 +156,10 @@ public class BookService implements IBookService {
             throw new UnauthorizedOperationException("You are not the owner of this book");
         }
 
+        if (book.isArchived()) {
+            throw new UnauthorizedOperationException("This book is archieved, not shareable");
+        }
+
         book.setShareable(!book.isShareable());
         bookRepository.save(book);
         return book.getId();
@@ -163,7 +167,20 @@ public class BookService implements IBookService {
 
     @Override
     public Integer updateArchivedStatus(Integer bookId, Authentication connectedUser) {
-        throw new UnsupportedOperationException("Unimplemented method 'updateArchivedStatus'");
+        Book book = bookRepository.findById(bookId)
+                .orElseThrow(() -> new EntityNotFoundException());
+        User user = (User) connectedUser.getPrincipal();
+
+        if (!BookHelper.isOwnedByThisUser(book, user)) {
+            throw new UnauthorizedOperationException("You are not the owner of this book");
+        }
+
+        book.setArchived(!book.isArchived());
+        if (book.isArchived()) {
+            book.setShareable(false);
+        }
+        bookRepository.save(book);
+        return book.getId();
     }
 
     @Override
