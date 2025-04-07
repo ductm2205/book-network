@@ -12,6 +12,7 @@ import se2.BookNetwork.models.common.User;
 
 public class CustomAuditorAware implements AuditorAware<String> {
 
+    @SuppressWarnings("null")
     @Override
     public Optional<String> getCurrentAuditor() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();

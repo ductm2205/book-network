@@ -17,12 +17,14 @@ import se2.BookNetwork.core.mappers.BookMapper;
 import se2.BookNetwork.core.requests.BookRequest;
 import se2.BookNetwork.core.responses.BookResponse;
 import se2.BookNetwork.core.responses.BorrowedBookResponse;
+import se2.BookNetwork.exceptions.UnauthorizedOperationException;
 import se2.BookNetwork.interfaces.IBookService;
 import se2.BookNetwork.models.common.Book;
 import se2.BookNetwork.models.common.BookTransaction;
 import se2.BookNetwork.models.common.User;
 import se2.BookNetwork.repositories.BookRepository;
 import se2.BookNetwork.repositories.BookTransactionRepository;
+import se2.BookNetwork.utils.BookHelper;
 import se2.BookNetwork.utils.BookSpecification;
 
 @Service
@@ -127,12 +129,36 @@ public class BookService implements IBookService {
     @Override
     public PageResponse<BorrowedBookResponse> findAllReturnedBooksByUser(int pageNumber, int pageSize,
             Authentication connectedUser) {
-        throw new UnsupportedOperationException("Unimplemented method 'findAllReturnedBooksByUser'");
+        User user = (User) connectedUser.getPrincipal();
+
+        Pageable pageable = PageRequest.of(pageNumber, pageSize);
+
+        Page<BookTransaction> returneds = bookTransactionRepository.findAllReturnedBooks(user.getId(), pageable);
+
+        List<BorrowedBookResponse> responses = returneds.stream().map(bookMapper::toBorrowedBookResponse).toList();
+        return new PageResponse<>(
+                responses,
+                returneds.getNumber(),
+                returneds.getSize(),
+                returneds.getTotalElements(),
+                returneds.getTotalPages(),
+                returneds.isFirst(),
+                returneds.isLast());
     }
 
     @Override
     public Integer updateShareableStatus(Integer bookId, Authentication connectedUser) {
-        throw new UnsupportedOperationException("Unimplemented method 'updateShareableStatus'");
+        Book book = bookRepository.findById(bookId)
+                .orElseThrow(() -> new EntityNotFoundException());
+        User user = (User) connectedUser.getPrincipal();
+
+        if (!BookHelper.isOwnedByThisUser(book, user)) {
+            throw new UnauthorizedOperationException("You are not the owner of this book");
+        }
+
+        book.setShareable(!book.isShareable());
+        bookRepository.save(book);
+        return book.getId();
     }
 
     @Override

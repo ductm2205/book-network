@@ -2,7 +2,6 @@ package se2.BookNetwork.services;
 
 import java.util.List;
 
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -18,7 +17,6 @@ import se2.BookNetwork.repositories.UserRepository;
 @RequiredArgsConstructor
 public class AuthenticationService implements IAuthenticationService{
 
-    private final UserDetailsService userDetailsService;
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;

@@ -11,12 +11,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import se2.BookNetwork.core.PageResponse;
 import se2.BookNetwork.core.requests.BookRequest;
 import se2.BookNetwork.core.responses.BookResponse;
 import se2.BookNetwork.core.responses.BorrowedBookResponse;
+import se2.BookNetwork.exceptions.UnauthorizedOperationException;
 import se2.BookNetwork.interfaces.IBookService;
 
 @Controller
@@ -77,13 +79,31 @@ public class BookController {
         PageResponse<BorrowedBookResponse> borrowedBooks = bookService.findAllBorrowedBooksByUser(pageNumber, pageSize,
                 authentication);
 
-        model.addAttribute("borrowedBooks", borrowedBooks.getElements());
+        model.addAttribute("books", borrowedBooks.getElements());
         model.addAttribute("currentPage", borrowedBooks.getPageNumber());
         model.addAttribute("totalPages", borrowedBooks.getTotalPages());
         model.addAttribute("pageSize", borrowedBooks.getPageSize());
         model.addAttribute("totalItems", borrowedBooks.getTotalElements());
 
-        return "book/borrowed"; // Assumes the template is located at templates/book/borrowed.html
+        return "book/borrowed";
+    }
+
+    @GetMapping("/returned")
+    public String getReturnedBooks(@RequestParam(defaultValue = "0") int pageNumber,
+            @RequestParam(defaultValue = "5") int pageSize,
+            Model model,
+            Authentication authentication) {
+
+        PageResponse<BorrowedBookResponse> returnedBooks = bookService.findAllReturnedBooksByUser(pageNumber, pageSize,
+                authentication);
+
+        model.addAttribute("books", returnedBooks.getElements());
+        model.addAttribute("currentPage", returnedBooks.getPageNumber());
+        model.addAttribute("totalPages", returnedBooks.getTotalPages());
+        model.addAttribute("pageSize", returnedBooks.getPageSize());
+        model.addAttribute("totalItems", returnedBooks.getTotalElements());
+
+        return "book/returned";
     }
 
     @GetMapping("/add")
@@ -107,5 +127,18 @@ public class BookController {
         redirectAttributes.addFlashAttribute("successMessage", "Book saved successfully with ID: " + savedBookId);
 
         return "redirect:/books";
+    }
+
+    @GetMapping("/{bookId}/toggleShareable")
+    public String toggleShareableStatus(@PathVariable("bookId") Integer bookId, Authentication authentication,
+            Model model) {
+        try {
+            Integer updatedBookId = bookService.updateShareableStatus(bookId, authentication);
+            model.addAttribute("bookId", updatedBookId);
+            return "redirect:/books/" + updatedBookId;
+        } catch (UnauthorizedOperationException | EntityNotFoundException ex) {
+            model.addAttribute("error", ex.getMessage());
+            return "error";
+        }
     }
 }
