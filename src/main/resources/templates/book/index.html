@@ -43,6 +43,7 @@
                 <th>Rate</th>
                 <th>Archived</th>
                 <th>Shareable</th>
+                <th>Action</th>
             </tr>
         </thead>
         <tbody>
@@ -54,13 +55,21 @@
                 <td th:text="${book.synopsis}"></td>
                 <td th:text="${book.ownerName}"></td>
                 <td>
-                    <img th:if="${book.cover != null}"
-                        alt="Cover" />
+                    <img th:if="${book.cover != null}" alt="Cover" />
                     <span th:if="${book.cover == null}">No Image</span>
                 </td>
                 <td th:text="${book.rate}"></td>
                 <td th:text="${book.archived ? 'Yes' : 'No'}"></td>
                 <td th:text="${book.shareable ? 'Yes' : 'No'}"></td>
+                <td>
+                    <!-- Borrow Button (only show if the book is shareable and the current user is not the owner) -->
+                    <a th:if="${book.shareable && book.ownerName != currentUser}"
+                        th:href="@{/books/{bookId}/borrow(bookId=${book.id})}">
+                        <button type="button">Borrow</button>
+                    </a>
+                    <span th:if="${book.ownerName == currentUser}">You cannot borrow your own book</span>
+                    <span th:if="${!book.shareable}">Not available for borrowing</span>
+                </td>
             </tr>
         </tbody>
     </table>
@@ -84,6 +93,7 @@
     <div>
         Total items: <span th:text="${totalItems}"></span>
     </div>
+
 </body>
 
 </html>

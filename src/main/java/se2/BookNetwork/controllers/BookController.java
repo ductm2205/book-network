@@ -20,6 +20,7 @@ import se2.BookNetwork.core.responses.BookResponse;
 import se2.BookNetwork.core.responses.BorrowedBookResponse;
 import se2.BookNetwork.exceptions.UnauthorizedOperationException;
 import se2.BookNetwork.interfaces.IBookService;
+import se2.BookNetwork.models.common.User;
 
 @Controller
 @RequestMapping(value = "/books")
@@ -41,6 +42,10 @@ public class BookController {
         model.addAttribute("totalPages", pageResponse.getTotalPages());
         model.addAttribute("totalItems", pageResponse.getTotalElements());
         model.addAttribute("pageSize", pageSize);
+
+        User currentUser = (User) connectedUser.getPrincipal();
+
+        model.addAttribute("currentUser", currentUser.getFullName());
 
         return "book/index";
     }
@@ -152,6 +157,19 @@ public class BookController {
         } catch (UnauthorizedOperationException | EntityNotFoundException ex) {
             model.addAttribute("error", ex.getMessage());
             return "error";
+        }
+    }
+
+    @SuppressWarnings("unused")
+    @GetMapping("/{bookId}/borrow")
+    public String borrowBook(@PathVariable("bookId") Integer bookId, Authentication authentication, Model model) {
+        try {
+            Integer bookTransactionId = bookService.borrowBook(bookId, authentication);
+            model.addAttribute("successMessage", "Book borrowed successfully!");
+            return "redirect:/books"; // Redirect to the book list page
+        } catch (UnauthorizedOperationException | EntityNotFoundException ex) {
+            model.addAttribute("error", ex.getMessage());
+            return "error"; // Error page for unauthorized or not found exceptions
         }
     }
 }

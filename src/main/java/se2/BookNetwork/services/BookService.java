@@ -185,7 +185,33 @@ public class BookService implements IBookService {
 
     @Override
     public Integer borrowBook(Integer bookId, Authentication connectedUser) {
-        throw new UnsupportedOperationException("Unimplemented method 'borrowBook'");
+        Book book = bookRepository.findById(bookId)
+                .orElseThrow(() -> new EntityNotFoundException());
+
+        User user = (User) connectedUser.getPrincipal();
+
+        if (BookHelper.isLocked(book)) {
+            throw new UnauthorizedOperationException("The book is currently locked. Please try again later");
+        }
+
+        if (BookHelper.isOwnedByThisUser(book, user)) {
+            throw new UnauthorizedOperationException("You cant borrow your own book");
+        }
+
+        final boolean isAlreadyBorrowed = bookTransactionRepository.isAlreadyBorrowed(book.getId());
+
+        if (isAlreadyBorrowed) {
+            throw new UnauthorizedOperationException("This book is already borrowed by other");
+        }
+
+        BookTransaction bookTransaction = BookTransaction.builder()
+                .user(user)
+                .book(book)
+                .isReturned(false)
+                .isReturnApproved(false)
+                .build();
+
+        return bookTransactionRepository.save(bookTransaction).getId();
     }
 
     @Override
