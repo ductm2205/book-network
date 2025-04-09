@@ -1,83 +1,60 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+    layout:decorate="~{layout}" lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Books</title>
-    <style>
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        th,
-        td {
-            padding: 10px;
-            border: 1px solid #ccc;
-        }
-
-        img {
-            max-height: 100px;
-        }
-    </style>
+    <title layout:title-pattern="My Books">My Books</title>
 </head>
 
 <body>
-    <h1>My Books</h1>
+    <div layout:fragment="content">
+        <h3>My books list</h3>
+        <hr>
 
-    <table>
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Title</th>
-                <th>Author</th>
-                <th>ISBN</th>
-                <th>Synopsis</th>
-                <th>Cover</th>
-                <th>Rate</th>
-                <th>Archived</th>
-                <th>Shareable</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr th:each="book : ${books}">
-                <td th:text="${book.id}"></td>
-                <td th:text="${book.title}"></td>
-                <td th:text="${book.authorName}"></td>
-                <td th:text="${book.isbn}"></td>
-                <td th:text="${book.synopsis}"></td>
-                <td>
-                    <img th:if="${book.cover != null}" alt="Cover" />
-                    <span th:if="${book.cover == null}">No Image</span>
-                </td>
-                <td th:text="${book.rate}"></td>
-                <td th:text="${book.archived ? 'Yes' : 'No'}"></td>
-                <td th:text="${book.shareable ? 'Yes' : 'No'}"></td>
-            </tr>
-        </tbody>
-    </table>
+        <div class="d-flex justify-content-end mb-3">
+            <a th:href="@{/books/add}" class="btn btn-outline-primary">
+                <i class="fas fa-plus"></i>&nbsp;New book
+            </a>
+        </div>
 
-    <div class="pagination">
-        <span th:if="${currentPage > 0}">
-            <a th:href="@{/my-books(pageNumber=${currentPage - 1}, pageSize=${pageSize})}">Previous</a>
-        </span>
+        <div class="d-flex justify-content-start gap-4 flex-wrap">
+            <div th:each="book : ${books}">
+                <div class="card" style="width: 18rem;">
+                    <div class="card-body">
+                        <h5 class="card-title" th:text="${book.title}">Book Title</h5>
+                        <p class="card-text" th:text="${book.synopsis}">Description</p>
 
-        <span th:each="i : ${#numbers.sequence(0, totalPages - 1)}">
-            <a th:if="${i != currentPage}" th:href="@{/my-books(pageNumber=${i}, pageSize=${pageSize})}"
-                th:text="${i + 1}"></a>
-            <span th:unless="${i != currentPage}" th:text="${i + 1}"></span>
-        </span>
+                        <!-- Example badge for archive and shareable status -->
+                        <span th:if="${book.archived}" class="badge bg-warning">Archived</span>
+                        <span th:if="${book.shareable}" class="badge bg-info">Shareable</span>
 
-        <span th:if="${currentPage < totalPages - 1}">
-            <a th:href="@{/my-books(pageNumber=${currentPage + 1}, pageSize=${pageSize})}">Next</a>
-        </span>
+                        <div class="mt-2 d-flex justify-content-between">
+                            <form th:action="@{'/books/archive/' + ${book.id}}" method="post">
+                                <button class="btn btn-sm btn-warning" type="submit">
+                                    <i class="fa-solid fa-box-archive"></i> Archive
+                                </button>
+                            </form>
+
+                            <form th:action="@{'/books/share/' + ${book.id}}" method="post">
+                                <button class="btn btn-sm btn-info text-white" type="submit">
+                                    <i class="fa-solid fa-share-nodes"></i> Share
+                                </button>
+                            </form>
+
+                            <a th:href="@{'/books/manage/' + ${book.id}}" class="btn btn-sm btn-secondary">
+                                <i class="fa-solid fa-pen"></i> Edit
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pagination fragment -->
+        <div
+            th:replace="fragments/pagination :: pagination(${currentPage}, ${pageSize}, ${totalPages}, ${currentPage}, '/my-books')">
+        </div>
     </div>
-
-    <div>
-        Total items: <span th:text="${totalItems}"></span>
-    </div>
-
 </body>
 
 </html>
