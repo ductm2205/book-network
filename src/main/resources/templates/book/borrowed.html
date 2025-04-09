@@ -1,83 +1,145 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+    layout:decorate="~{layout}" lang="en">
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Books</title>
-    <style>
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        th,
-        td {
-            padding: 10px;
-            border: 1px solid #ccc;
-        }
-
-        img {
-            max-height: 100px;
-        }
-    </style>
-</head>
-
-<body>
-    <h1>My Books</h1>
-
-    <table>
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Title</th>
-                <th>Author</th>
-                <th>ISBN</th>
-                <th>Synopsis</th>
-                <th>Cover</th>
-                <th>Rate</th>
-                <th>Archived</th>
-                <th>Shareable</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr th:each="book : ${books}">
-                <td th:text="${book.id}"></td>
-                <td th:text="${book.title}"></td>
-                <td th:text="${book.authorName}"></td>
-                <td th:text="${book.isbn}"></td>
-                <td th:text="${book.synopsis}"></td>
-                <td>
-                    <img th:if="${book.cover != null}" alt="Cover" />
-                    <span th:if="${book.cover == null}">No Image</span>
-                </td>
-                <td th:text="${book.rate}"></td>
-                <td th:text="${book.archived ? 'Yes' : 'No'}"></td>
-                <td th:text="${book.shareable ? 'Yes' : 'No'}"></td>
-            </tr>
-        </tbody>
-    </table>
-
-    <div class="pagination">
-        <span th:if="${currentPage > 0}">
-            <a th:href="@{/my-books(pageNumber=${currentPage - 1}, pageSize=${pageSize})}">Previous</a>
-        </span>
-
-        <span th:each="i : ${#numbers.sequence(0, totalPages - 1)}">
-            <a th:if="${i != currentPage}" th:href="@{/my-books(pageNumber=${i}, pageSize=${pageSize})}"
-                th:text="${i + 1}"></a>
-            <span th:unless="${i != currentPage}" th:text="${i + 1}"></span>
-        </span>
-
-        <span th:if="${currentPage < totalPages - 1}">
-            <a th:href="@{/my-books(pageNumber=${currentPage + 1}, pageSize=${pageSize})}">Next</a>
-        </span>
+<div layout:fragment="content">
+    <h2>My borrowed books</h2>
+    <hr>
+    <!-- Book Return and Feedback Form -->
+    <div class="d-flex flex-column col-6" th:if="${selectedBook != null}">
+        <h2>Return and share feedback</h2>
+        <div class="d-flex flex-column col-12">
+            <div class="d-flex">
+                <div class="col-1">
+                    <strong>Title</strong>
+                </div>
+                <div class="col-11" th:text="${selectedBook.title}">Book Title</div>
+            </div>
+            <div class="d-flex">
+                <div class="col-1">
+                    <strong>Author</strong>
+                </div>
+                <div class="col-11" th:text="${selectedBook.authorName}">Author Name</div>
+            </div>
+            <div class="d-flex">
+                <div class="col-1">
+                    <strong>ISBN</strong>
+                </div>
+                <div class="col-11" th:text="${selectedBook.isbn}">ISBN</div>
+            </div>
+            <div class="d-flex">
+                <div class="col-1">
+                    <strong>Rate</strong>
+                </div>
+                <div class="col-11" th:text="${selectedBook.rate}">Rate</div>
+            </div>
+        </div>
+        <hr>
+        <div class="col-12">
+            <form class="row g-3" th:action="@{/my-borrowed-books/return}" method="post">
+                <input type="hidden" name="bookId" th:value="${selectedBook.id}">
+                <div class="d-flex gap-3">
+                    <input title="rating" type="range" id="note" name="note" class="form-range w-25" min="0" max="5" step="0.5"
+                        value="0" oninput="updateRating(this.value)">
+                    <div id="ratingStars">
+                        <div th:replace="~{fragments/rating :: rating(0)}"></div>
+                    </div>
+                    <span id="ratingValue">0</span>
+                </div>
+                <div class="col-12">
+                    <label for="comment" class="form-label">Feedback</label>
+                    <textarea rows="4" class="form-control" id="comment" name="comment"
+                        placeholder="Feedback"></textarea>
+                </div>
+                <div class="d-flex justify-content-end gap-2 col-12">
+                    <button type="submit" name="action" value="returnWithFeedback" class="btn btn-outline-primary">
+                        <i class="fas fa-save"></i>&nbsp;Rate the book & Return
+                    </button>
+                    <button type="submit" name="action" value="returnOnly" class="btn btn-outline-success">
+                        <i class="fa-solid fa-paper-plane"></i>&nbsp;Just Return
+                    </button>
+                    <a th:href="@{/my-borrowed-books}" class="btn btn-link btn text-danger">
+                        <i class="fas fa-times"></i>&nbsp;Cancel
+                    </a>
+                </div>
+            </form>
+        </div>
     </div>
 
-    <div>
-        Total items: <span th:text="${totalItems}"></span>
+    <!-- Borrowed Books Table -->
+    <div th:if="${selectedBook == null}">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Title</th>
+                    <th scope="col">Author</th>
+                    <th scope="col">ISBN</th>
+                    <th scope="col">Rate</th>
+                    <th scope="col"><i class="fas fa-cogs"></i></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="book, bookStat : ${books}">
+                    <th scope="row" th:text="${bookStat.index + 1}">1</th>
+                    <td th:text="${book.title}">Book Title</td>
+                    <td th:text="${book.authorName}">Author Name</td>
+                    <td th:text="${book.isbn}">ISBN</td>
+                    <td>
+                        <i class="fas fa-star text-warning"></i>
+                        <span th:text="${book.rate}">4.5</span>
+                    </td>
+                    <td>
+                        <div class="d-flex gap-2">
+                            <i th:if="${book.returned}" class="fa-regular fa-paper-plane text-success"></i>
+                            <a th:if="${!book.returned}" th:href="@{/my-borrowed-books/return-form/{id}(id=${book.id})}"
+                                class="text-decoration-none">
+                                <i class="fa-solid fa-paper-plane text-primary"></i>
+                            </a>
+                            <i class="fa-solid fa-circle-check"
+                                th:classappend="${book.returnApproved ? 'text-success' : ''}"></i>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <!-- Pagination -->
+        <th:block
+            th:replace="~{fragments/pagination :: pagination(${currentPage}, ${pageSize}, ${totalPages}, ${currentPage}, @{/books/my-borrowed-books})}">
+        </th:block>
     </div>
 
-</body>
+    <!-- JavaScript for Rating Update -->
+    <script th:inline="javascript">
+        function updateRating(value) {
+            const ratingValue = parseFloat(value);
+            document.getElementById('ratingValue').textContent = ratingValue;
+
+            // Update stars dynamically
+            const starsContainer = document.getElementById('ratingStars');
+            let starsHTML = '';
+
+            // Full stars
+            const fullStars = Math.floor(ratingValue);
+            for (let i = 0; i < fullStars; i++) {
+                starsHTML += '<i class="fas fa-star text-warning"></i>';
+            }
+
+            // Half star
+            if (ratingValue - fullStars >= 0.5) {
+                starsHTML += '<i class="fas fa-star-half-alt text-warning"></i>';
+            }
+
+            // Empty stars
+            const emptyStars = 5 - Math.ceil(ratingValue);
+            for (let i = 0; i < emptyStars; i++) {
+                starsHTML += '<i class="far fa-star"></i>';
+            }
+
+            starsContainer.innerHTML = starsHTML;
+        }
+    </script>
+</div>
 
 </html>

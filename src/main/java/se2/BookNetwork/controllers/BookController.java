@@ -48,6 +48,8 @@ public class BookController {
         User currentUser = (User) connectedUser.getPrincipal();
 
         model.addAttribute("currentUser", currentUser.getFullName());
+        model.addAttribute("activeTab", "books");
+        model.addAttribute("title", "Books");
 
         return "book/index";
     }
@@ -86,10 +88,12 @@ public class BookController {
         model.addAttribute("totalItems", pageResponse.getTotalElements());
         model.addAttribute("totalPages", pageResponse.getTotalPages());
 
+        model.addAttribute("title", "My Books");
+        model.addAttribute("activeTab", "my-books");
         return "book/mine";
     }
 
-    @GetMapping("/borrowed")
+    @GetMapping("/my-borrowed-books")
     public String getBorrowedBooks(@RequestParam(defaultValue = "0") int pageNumber,
             @RequestParam(defaultValue = "5") int pageSize,
             Model model,
@@ -104,10 +108,13 @@ public class BookController {
         model.addAttribute("pageSize", borrowedBooks.getPageSize());
         model.addAttribute("totalItems", borrowedBooks.getTotalElements());
 
+        model.addAttribute("activeTab", "my-borrowed-books");
+        model.addAttribute("title", "My Borrowed Books");
+
         return "book/borrowed";
     }
 
-    @GetMapping("/returned")
+    @GetMapping("/my-returned-books")
     public String getReturnedBooks(@RequestParam(defaultValue = "0") int pageNumber,
             @RequestParam(defaultValue = "5") int pageSize,
             Model model,
@@ -121,6 +128,9 @@ public class BookController {
         model.addAttribute("totalPages", returnedBooks.getTotalPages());
         model.addAttribute("pageSize", returnedBooks.getPageSize());
         model.addAttribute("totalItems", returnedBooks.getTotalElements());
+
+        model.addAttribute("activeTab", "my-returned-books");
+        model.addAttribute("title", "My Returned Books");
 
         return "book/returned";
     }
@@ -143,47 +153,61 @@ public class BookController {
         }
 
         Integer savedBookId = this.bookService.save(bookRequest, connectedUser);
-        redirectAttributes.addFlashAttribute("successMessage", "Book saved successfully with ID: " + savedBookId);
-
+        redirectAttributes.addFlashAttribute("message", "Book saved successfully with ID: " + savedBookId);
+        redirectAttributes.addFlashAttribute("level", "success");
         return "redirect:/books";
     }
 
-    @GetMapping("/{bookId}/toggleShareable")
-    public String toggleShareableStatus(@PathVariable("bookId") Integer bookId, Authentication authentication,
+    @GetMapping("/{bookId}/share")
+    public String toggleShareableStatus(
+            @PathVariable("bookId") Integer bookId,
+            Authentication authentication,
+            RedirectAttributes redirectAttributes,
             Model model) {
         try {
             Integer updatedBookId = bookService.updateShareableStatus(bookId, authentication);
             model.addAttribute("bookId", updatedBookId);
-            return "redirect:/books/" + updatedBookId;
+            redirectAttributes.addFlashAttribute("message", "Book's sharable status updated successfully!");
+            redirectAttributes.addFlashAttribute("level", "success");
         } catch (UnauthorizedOperationException | EntityNotFoundException ex) {
             model.addAttribute("error", ex.getMessage());
-            return "error";
+            redirectAttributes.addFlashAttribute("message", ex.getMessage() + "!");
+            redirectAttributes.addFlashAttribute("level", "error");
         }
+        return "redirect:/books/my-books";
     }
 
-    @GetMapping("/{bookId}/toggleArchieve")
+    @GetMapping("/{bookId}/archive")
     public String toggleArchieveStatus(@PathVariable("bookId") Integer bookId, Authentication authentication,
+            RedirectAttributes redirectAttributes,
             Model model) {
         try {
             Integer updatedBookId = bookService.updateArchivedStatus(bookId, authentication);
             model.addAttribute("bookId", updatedBookId);
-            return "redirect:/books/" + updatedBookId;
+            redirectAttributes.addFlashAttribute("message", "Book's archived status updated successfully!");
+            redirectAttributes.addFlashAttribute("level", "success");
         } catch (UnauthorizedOperationException | EntityNotFoundException ex) {
             model.addAttribute("error", ex.getMessage());
-            return "error";
+            redirectAttributes.addFlashAttribute("message", ex.getMessage() + "!");
+            redirectAttributes.addFlashAttribute("level", "error");
         }
+        return "redirect:/books/my-books";
     }
 
     @SuppressWarnings("unused")
     @GetMapping("/{bookId}/borrow")
-    public String borrowBook(@PathVariable("bookId") Integer bookId, Authentication authentication, Model model) {
+    public String borrowBook(
+            @PathVariable("bookId") Integer bookId,
+            Authentication authentication,
+            RedirectAttributes redirectAttributes) {
         try {
             Integer bookTransactionId = bookService.borrowBook(bookId, authentication);
-            model.addAttribute("successMessage", "Book borrowed successfully!");
-            return "redirect:/books"; // Redirect to the book list page
+            redirectAttributes.addFlashAttribute("message", "Book borrowed successfully!");
+            redirectAttributes.addFlashAttribute("level", "success");
         } catch (UnauthorizedOperationException | EntityNotFoundException ex) {
-            model.addAttribute("error", ex.getMessage());
-            return "error"; // Error page for unauthorized or not found exceptions
+            redirectAttributes.addFlashAttribute("message", ex.getMessage() + "!");
+            redirectAttributes.addFlashAttribute("level", "error");
         }
+        return "redirect:/books";
     }
 }
