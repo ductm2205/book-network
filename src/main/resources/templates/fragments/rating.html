@@ -1,0 +1,19 @@
+<!-- fragments/rating.html -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<body>
+    <div th:fragment="rating(rating)" class="rating">
+        <!-- Using integer part for full stars -->
+        <i th:each="i : ${#numbers.sequence(1, rating.intValue())}" class="fas fa-star text-warning"></i>
+
+        <!-- Half star (if applicable) -->
+        <i th:if="${rating - rating.intValue() >= 0.5}" class="fas fa-star-half-alt text-warning"></i>
+
+        <!-- Empty stars (calculating the remaining stars to make 5) -->
+        <i th:each="i : ${#numbers.sequence(1, 5 - (rating.intValue() + (rating - rating.intValue() >= 0.5 ? 1 : 0)))}"
+            class="far fa-star"></i>
+    </div>
+</body>
+
+</html>

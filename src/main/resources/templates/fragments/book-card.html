@@ -1,0 +1,77 @@
+<!-- fragments/book-card.html -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<body>
+    <!-- 
+    Fragment Parameters:
+    - book: The book object
+    - manage: Boolean flag for showing management options
+    - onShare: URL for share action 
+    - onArchive: URL for archive action
+    - onAddToWaitingList: URL for adding to waiting list action
+    - onBorrow: URL for borrow action
+    - onEdit: URL for edit action
+    - onShowDetails: URL for show details action
+    -->
+    <div th:fragment="bookCard(book, manage, onShare, onArchive, onAddToWaitingList, onBorrow, onEdit, onShowDetails)"
+        class="card"
+        th:classappend="${book.shareable ? 'border-success' : ''} + ' ' + ${book.archived ? 'border-warning' : ''}">
+
+        <img height="200"
+            th:src="${book.cover != null ? 'data:image/jpg;base64,' + book.cover : 'https://source.unsplash.com/user/c_v_r/1900x800'}"
+            class="card-img-top" alt="Book cover">
+
+        <div class="card-body overflow-scroll">
+            <h5 class="card-title fs-6 text-nowrap fw-bold mb-1">
+                <i class="fa-solid fa-book"></i>&nbsp;<span th:text="${book.title}">Book Title</span>
+            </h5>
+            <h5 class="card-subtitle fs-6 text-secondary mb-1">
+                <i class="fa-solid fa-user-check"></i>&nbsp;<span th:text="${book.authorName}">Author Name</span>
+            </h5>
+            <h6 class="card-subtitle fs-6 text-secondary mb-1">
+                <i class="fas fa-code"></i>&nbsp;<span th:text="${book.isbn}">ISBN</span>
+            </h6>
+            <h6 class="card-subtitle fs-6 text-secondary">
+                <i class="fas fa-user"></i>&nbsp;<span th:text="${book.ownerName}">Owner</span>
+            </h6>
+            <hr>
+            <p class="card-text" th:text="${book.synopsis}">Synopsis text</p>
+        </div>
+
+        <div class="card-footer d-flex gap-2 justify-content-between align-items-center">
+            <div class="d-flex gap-2">
+                <div th:replace="~{fragments/rating :: rating(${book.rate})}"></div>
+                <span class="fw-bold" th:if="${book.rate > 0}" th:text="${book.rate}">Rating</span>
+            </div>
+
+            <!-- Standard user actions -->
+            <div class="d-flex gap-2" th:if="${!manage}">
+                <a th:href="${onShowDetails}" class="text-decoration-none">
+                    <i class="fas fa-circle-info text-primary"></i>
+                </a>
+                <a th:href="${onBorrow}" class="text-decoration-none">
+                    <i class="fas fa-list-check text-primary"></i>
+                </a>
+                <a th:href="${onAddToWaitingList}" class="text-decoration-none">
+                    <i class="fas fa-heart text-danger"></i>
+                </a>
+            </div>
+
+            <!-- Management actions -->
+            <div class="d-flex gap-2" th:if="${manage}">
+                <a th:href="${onEdit}" class="text-decoration-none">
+                    <i class="fas fa-edit text-success"></i>
+                </a>
+                <a th:href="${onShare}" class="text-decoration-none">
+                    <i class="fas fa-share-nodes text-primary"></i>
+                </a>
+                <a th:href="${onArchive}" class="text-decoration-none">
+                    <i class="fas fa-archive text-danger"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

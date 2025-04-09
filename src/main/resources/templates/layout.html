@@ -10,7 +10,8 @@
 </head>
 
 <body>
-    <div class="container mt-4">
+    <div class="container" th:replace="~{fragments/menu :: menu(${activeTab})}"></div>
+    <div class="container">
         <div layout:fragment="content"></div>
     </div>
     <script th:src="@{/js/bootstrap.bundle.min.js}"></script>
