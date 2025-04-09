@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+    layout:decorate="~{layout}" lang="en">
 
 <head>
     <meta charset="UTF-8">
@@ -18,7 +19,7 @@
 
 <body>
     <!-- Content fragment that will be inserted into the layout template -->
-    <th:block th:fragment="content">
+    <div layout:fragment="content">
         <!-- Book Details Section -->
         <div class="p-2">
             <hr>
@@ -44,7 +45,7 @@
                             </span>
                         </div>
                         <span th:text="${book.rate}">0.0</span>
-                        (<span th:text="${feedbacks != null ? feedbacks.totalElements : 0}">0</span> feedbacks)
+                        (<span th:text="${feedbacks != null ? feedbacks.getTotalElements() : 0}">0</span> feedbacks)
                     </div>
                     <hr>
                     <p th:text="${book.synopsis}">Book synopsis goes here...</p>
@@ -57,7 +58,7 @@
             <h3>Feedbacks</h3>
 
             <div class="d-flex flex-column justify-content-end">
-                <div th:if="${feedbacks != null && !feedbacks.comment.empty}" th:each="feedback : ${feedbacks.comment}"
+                <div th:if="${feedbacks != null and #lists.isNotEmpty(feedbacks)}" th:each="feedback : ${feedbacks.getElements()}"
                     class="mb-3 p-3 border rounded">
                     <div class="d-flex gap-2">
                         <!-- Star Rating for Feedback -->
@@ -72,22 +73,23 @@
                     <p th:text="${feedback.comment}">Feedback comment goes here...</p>
                 </div>
 
-                <div th:if="${feedbacks == null || feedbacks.content.empty}" class="alert alert-info">
+                <div th:if="${feedbacks == null or #lists.isEmpty(feedbacks)}" class="alert alert-info">
                     No feedbacks available for this book yet.
                 </div>
             </div>
 
-            <!-- Include the pagination fragment for feedbacks -->
-            <div th:if="${feedbacks != null && feedbacks.totalPages > 1}">
+            <!-- Pagination -->
+            <div th:if="${totalPages > 1}">
                 <div
-                    th:replace="~{fragments/pagination :: pagination(${pageNumber}, ${pageSize}, ${feedbacks.totalPages}, ${currentPage}, @{/books/details/{id}(id=${book.id})})}">
+                    th:replace="~{fragments/pagination :: pagination(${pageNumber}, ${pageSize}, ${totalPages}, ${pageNumber}, @{/books/{id}(id=${book.id})})}">
                 </div>
             </div>
         </div>
+
     </th:block>
 
     <!-- Use the layout template and pass our content fragment -->
-    <div th:replace="~{layout/layout :: layout(~{::content}, ${book.title} + ' - Details')}"></div>
+    <!-- <div th:replace="~{layout :: layout(~{::content}, ${book.title} + ' - Details')}"></div> -->
 </body>
 
 </html>

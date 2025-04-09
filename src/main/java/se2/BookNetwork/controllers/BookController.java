@@ -20,6 +20,7 @@ import se2.BookNetwork.core.responses.BookResponse;
 import se2.BookNetwork.core.responses.BorrowedBookResponse;
 import se2.BookNetwork.exceptions.UnauthorizedOperationException;
 import se2.BookNetwork.interfaces.IBookService;
+import se2.BookNetwork.interfaces.IFeedbackService;
 import se2.BookNetwork.models.common.User;
 
 @Controller
@@ -27,6 +28,7 @@ import se2.BookNetwork.models.common.User;
 @RequiredArgsConstructor
 public class BookController {
     private final IBookService bookService;
+    private final IFeedbackService feedbackService;
 
     @GetMapping()
     public String getAllBooks(
@@ -51,9 +53,21 @@ public class BookController {
     }
 
     @GetMapping("/{id}")
-    public String getBookById(@PathVariable Integer id, Model model) {
+    public String getBookById(
+            @PathVariable Integer id,
+            Model model,
+            Authentication currentUser,
+            @RequestParam(name = "pageNumber", defaultValue = "0", required = false) int pageNumber,
+            @RequestParam(name = "pageSize", defaultValue = "10", required = false) int pageSize) {
         BookResponse book = bookService.getBookById(id);
         model.addAttribute("book", book);
+
+        var feedbacks = this.feedbackService.findAllFeedbackByBookId(id, currentUser, pageNumber, pageSize);
+        model.addAttribute("feedbacks", feedbacks);
+        model.addAttribute("pageNumber", pageNumber);
+        model.addAttribute("pageSize", pageSize);
+        model.addAttribute("totalPages", feedbacks.getTotalPages());
+
         return "book/detail";
     }
 
