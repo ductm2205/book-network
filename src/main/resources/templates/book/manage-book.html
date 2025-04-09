@@ -67,60 +67,19 @@
                 </form>
             </div>
         </div>
-    </div>
-
-    <!-- Script for image preview -->
-    <script>
-        function previewImage(input) {
-            if (input.files && input.files[0]) {
-                var reader = new FileReader();
-                reader.onload = function (e) {
-                    document.querySelector('img').src = e.target.result;
-                };
-                reader.readAsDataURL(input.files[0]);
-                window.selectedCoverFile = input.files[0];
+        <!-- Script for image preview -->
+        <script>
+            function previewImage(input) {
+                if (input.files && input.files[0]) {
+                    var reader = new FileReader();
+                    reader.onload = function (e) {
+                        document.querySelector('img').src = e.target.result;
+                    };
+                    reader.readAsDataURL(input.files[0]);
+                    window.selectedCoverFile = input.files[0];
+                }
             }
-        }
-
-        document.getElementById('saveBtn').addEventListener('click', function (e) {
-            e.preventDefault();
-
-            const bookForm = document.querySelector('form[action*="/books/save"]');
-            const formData = new FormData(bookForm);
-
-            fetch(bookForm.action, {
-                method: 'POST',
-                body: formData
-            })
-                .then(response => response.json())
-                .then(data => {
-                    if (!data.success) {
-                        throw new Error('Validation failed: ' + (data.errors || []).join(', '));
-                    }
-                    const bookId = data.bookId;
-
-                    if (window.selectedCoverFile) {
-                        const coverForm = document.getElementById('coverForm');
-                        const coverFormData = new FormData(coverForm);
-                        coverFormData.append('bookId', bookId);
-                        coverFormData.append('file', window.selectedCoverFile);
-
-                        return fetch('/books/upload-cover', {
-                            method: 'POST',
-                            body: coverFormData
-                        });
-                    }
-                    return Promise.resolve();
-                })
-                .then(() => {
-                    window.location.href = '/books/my-books';
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    alert('Error saving book: ' + error.message);
-                });
-        });
-    </script>
+        </script>
     </div>
 
 </body>
