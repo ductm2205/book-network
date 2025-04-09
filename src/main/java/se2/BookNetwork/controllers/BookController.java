@@ -47,6 +47,8 @@ public class BookController {
 
         model.addAttribute("currentUser", currentUser.getFullName());
 
+        model.addAttribute("title", "Books");
+
         return "book/index";
     }
 

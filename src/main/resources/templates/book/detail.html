@@ -4,36 +4,90 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Book Detail</title>
+    <title>Book Details</title>
+    <style>
+        .star-rating {
+            color: #ffc107;
+        }
+
+        .star-empty {
+            color: #e4e5e9;
+        }
+    </style>
 </head>
 
 <body>
-    <h1 th:text="${book.title}">Book Title</h1>
-    <p><strong>Author:</strong> <span th:text="${book.authorName}"></span></p>
-    <p><strong>ISBN:</strong> <span th:text="${book.isbn}"></span></p>
-    <p><strong>Synopsis:</strong> <span th:text="${book.synopsis}"></span></p>
-    <p><strong>Owner:</strong> <span th:text="${book.ownerName}"></span></p>
-    <p><strong>Rate:</strong> <span th:text="${book.rate}"></span></p>
-    <p><strong>Archived:</strong> <span th:text="${book.archived ? 'Yes' : 'No'}"></span></p>
-    <a th:href="@{/books/{bookId}/toggleArchieve(bookId=${book.id})}">
-        <button type="button" title="archived"
-            th:text="${book.archived ? 'UnArchived' : 'Archived'}"></button>
-    </a>
-    <p><strong>Shareable:</strong> <span th:text="${book.shareable ? 'Yes' : 'No'}"></span></p>
-    <a th:href="@{/books/{bookId}/toggleShareable(bookId=${book.id})}">
-        <button type="button" title="shareable"
-            th:text="${book.shareable ? 'Make Not Shareable' : 'Make Shareable'}"></button>
-    </a>
-    <div>
-        <strong>Cover:</strong><br />
-        <img th:if="${book.cover != null}" alt="Book Cover" />
-        <p th:if="${book.cover == null}">No cover image</p>
-    </div>
+    <!-- Content fragment that will be inserted into the layout template -->
+    <th:block th:fragment="content">
+        <!-- Book Details Section -->
+        <div class="p-2">
+            <hr>
+            <div class="d-flex gap-2">
+                <div class="col-3">
+                    <img class="rounded-1" width="100%" height="100%"
+                        th:src="${book.cover != null ? 'data:image/jpg;base64,' + book.cover : 'https://source.unsplash.com/user/c_v_r/1900x800'}"
+                        alt="Book Cover">
+                </div>
+                <div class="col-9">
+                    <h2><i class="fa-solid fa-book"></i>&nbsp;<span th:text="${book.title}">Book Title</span></h2>
+                    <h4><i class="fa-solid fa-user-check"></i>&nbsp;<span th:text="${book.authorName}">Author
+                            Name</span></h4>
+                    <h5><i class="fas fa-code"></i>&nbsp;<span th:text="${book.isbn}">ISBN</span></h5>
+                    <h6 class="card-subtitle fs-6 text-secondary"><i class="fas fa-user"></i>&nbsp;<span
+                            th:text="${book.ownerName}">Owner</span></h6>
+                    <div class="d-flex gap-2">
+                        <!-- Star Rating -->
+                        <div class="d-flex" th:with="rating=${book.rate != null ? book.rate : 0}">
+                            <span th:each="i : ${#numbers.sequence(1, 5)}">
+                                <i class="fas fa-star"
+                                    th:class="${i <= rating ? 'fas fa-star star-rating' : 'far fa-star star-empty'}"></i>
+                            </span>
+                        </div>
+                        <span th:text="${book.rate}">0.0</span>
+                        (<span th:text="${feedbacks != null ? feedbacks.totalElements : 0}">0</span> feedbacks)
+                    </div>
+                    <hr>
+                    <p th:text="${book.synopsis}">Book synopsis goes here...</p>
+                </div>
+            </div>
+        </div>
 
-    <!-- Display Error Message if any -->
-    <div th:if="${error}">
-        <p th:text="${error}" style="color: red;"></p>
-    </div>
+        <!-- Feedbacks Section -->
+        <div class="mt-4">
+            <h3>Feedbacks</h3>
+
+            <div class="d-flex flex-column justify-content-end">
+                <div th:if="${feedbacks != null && !feedbacks.comment.empty}" th:each="feedback : ${feedbacks.comment}"
+                    class="mb-3 p-3 border rounded">
+                    <div class="d-flex gap-2">
+                        <!-- Star Rating for Feedback -->
+                        <div class="d-flex" th:with="rating=${feedback.note != null ? feedback.note : 0}">
+                            <span th:each="i : ${#numbers.sequence(1, 5)}">
+                                <i class="fas fa-star"
+                                    th:class="${i <= rating ? 'fas fa-star star-rating' : 'far fa-star star-empty'}"></i>
+                            </span>
+                        </div>
+                        <strong th:text="${feedback.note}">5.0</strong>
+                    </div>
+                    <p th:text="${feedback.comment}">Feedback comment goes here...</p>
+                </div>
+
+                <div th:if="${feedbacks == null || feedbacks.content.empty}" class="alert alert-info">
+                    No feedbacks available for this book yet.
+                </div>
+            </div>
+
+            <!-- Include the pagination fragment for feedbacks -->
+            <div th:if="${feedbacks != null && feedbacks.totalPages > 1}">
+                <div
+                    th:replace="~{fragments/pagination :: pagination(${pageNumber}, ${pageSize}, ${feedbacks.totalPages}, ${currentPage}, @{/books/details/{id}(id=${book.id})})}">
+                </div>
+            </div>
+        </div>
+    </th:block>
+
+    <!-- Use the layout template and pass our content fragment -->
+    <div th:replace="~{layout/layout :: layout(~{::content}, ${book.title} + ' - Details')}"></div>
 </body>
 
 </html>
