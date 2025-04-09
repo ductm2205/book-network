@@ -1,5 +1,7 @@
 package se2.BookNetwork.controllers;
 
+import java.util.stream.Collectors;
+
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -9,6 +11,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import jakarta.persistence.EntityNotFoundException;
@@ -21,6 +24,7 @@ import se2.BookNetwork.core.responses.BorrowedBookResponse;
 import se2.BookNetwork.exceptions.UnauthorizedOperationException;
 import se2.BookNetwork.interfaces.IBookService;
 import se2.BookNetwork.interfaces.IFeedbackService;
+import se2.BookNetwork.interfaces.IFileService;
 import se2.BookNetwork.models.common.User;
 
 @Controller
@@ -29,11 +33,14 @@ import se2.BookNetwork.models.common.User;
 public class BookController {
     private final IBookService bookService;
     private final IFeedbackService feedbackService;
+    private final IFileService fileService;
+
+    private static final String DEFAULT_PAGE_SIZE = "20";
 
     @GetMapping()
     public String getAllBooks(
             @RequestParam(name = "pageNumber", defaultValue = "0", required = false) int pageNumber,
-            @RequestParam(name = "pageSize", defaultValue = "10", required = false) int pageSize,
+            @RequestParam(name = "pageSize", defaultValue = DEFAULT_PAGE_SIZE, required = false) int pageSize,
             Authentication connectedUser,
             Model model) {
 
@@ -60,7 +67,7 @@ public class BookController {
             Model model,
             Authentication currentUser,
             @RequestParam(name = "pageNumber", defaultValue = "0", required = false) int pageNumber,
-            @RequestParam(name = "pageSize", defaultValue = "10", required = false) int pageSize) {
+            @RequestParam(name = "pageSize", defaultValue = DEFAULT_PAGE_SIZE, required = false) int pageSize) {
         BookResponse book = bookService.getBookById(id);
         model.addAttribute("book", book);
 
@@ -76,7 +83,7 @@ public class BookController {
     @GetMapping("/my-books")
     public String getMyBooks(
             @RequestParam(defaultValue = "0") int pageNumber,
-            @RequestParam(defaultValue = "10") int pageSize,
+            @RequestParam(defaultValue = DEFAULT_PAGE_SIZE) int pageSize,
             Authentication authentication,
             Model model) {
         PageResponse<BookResponse> pageResponse = bookService.findAllBooksOwnedByUser(pageNumber, pageSize,
@@ -95,7 +102,7 @@ public class BookController {
 
     @GetMapping("/my-borrowed-books")
     public String getBorrowedBooks(@RequestParam(defaultValue = "0") int pageNumber,
-            @RequestParam(defaultValue = "5") int pageSize,
+            @RequestParam(defaultValue = DEFAULT_PAGE_SIZE) int pageSize,
             Model model,
             Authentication authentication) {
 
@@ -116,7 +123,7 @@ public class BookController {
 
     @GetMapping("/my-returned-books")
     public String getReturnedBooks(@RequestParam(defaultValue = "0") int pageNumber,
-            @RequestParam(defaultValue = "5") int pageSize,
+            @RequestParam(defaultValue = DEFAULT_PAGE_SIZE) int pageSize,
             Model model,
             Authentication authentication) {
 
@@ -135,27 +142,74 @@ public class BookController {
         return "book/returned";
     }
 
-    @GetMapping("/add")
+    @GetMapping("/manage")
     public String showAddForm(Model model) {
         model.addAttribute("bookRequest", new BookRequest(null, "", "", "", "", false));
-        return "book/add";
+        model.addAttribute("title", "Add New Book");
+        model.addAttribute("activeTab", "books");
+        return "book/manage-book";
+    }
+
+    @GetMapping("/{bookId}/manage")
+    public String editBookPage(@PathVariable("bookId") Integer bookId, Model model) {
+        var book = bookService.getBookById(bookId);
+        if (book != null) {
+            BookRequest bookRequest = new BookRequest(null, "", "", "", "", false);
+            bookRequest.setId(book.getId());
+            bookRequest.setTitle(book.getTitle());
+            bookRequest.setAuthorName(book.getAuthorName());
+            bookRequest.setIsbn(book.getIsbn());
+            bookRequest.setSynopsis(book.getSynopsis());
+            bookRequest.setShareable(book.isShareable());
+
+            model.addAttribute("title", "Edit Book");
+            model.addAttribute("activeTab", "books");
+            model.addAttribute("bookRequest", bookRequest);
+            model.addAttribute("book", book);
+            return "book/manage-book";
+        }
+        return "redirect:/books/my-books";
     }
 
     @PostMapping("/save")
     public String saveBook(
             @Valid BookRequest bookRequest,
             BindingResult bindingResult,
+            @RequestParam(value = "file", required = false) MultipartFile file,
             Authentication connectedUser,
-            RedirectAttributes redirectAttributes) {
+            RedirectAttributes redirectAttributes,
+            Model model) {
 
         if (bindingResult.hasErrors()) {
-            return "book/add";
+            model.addAttribute("errors", bindingResult.getAllErrors()
+                    .stream()
+                    .map(error -> error.getDefaultMessage())
+                    .collect(Collectors.toList()));
+            model.addAttribute("book", bookRequest); // Preserve form data
+            model.addAttribute("title", bookRequest.getId() != null ? "Edit Book" : "Add New Book");
+            model.addAttribute("activeTab", "books");
+            return "book/manage-book";
         }
 
+        // Save the book details
         Integer savedBookId = this.bookService.save(bookRequest, connectedUser);
+
+        // Handle the cover upload if a file is provided
+        if (file != null && !file.isEmpty()) {
+            User user = (User) connectedUser.getPrincipal();
+            String filePath = fileService.saveFile(file, user.getUsername());
+            if (filePath != null) {
+                bookService.uploadBookCover(file, savedBookId, connectedUser);
+            } else {
+                redirectAttributes.addFlashAttribute("message", "Book saved, but cover upload failed.");
+                redirectAttributes.addFlashAttribute("level", "warning");
+                return "redirect:/books/my-books";
+            }
+        }
+
         redirectAttributes.addFlashAttribute("message", "Book saved successfully with ID: " + savedBookId);
         redirectAttributes.addFlashAttribute("level", "success");
-        return "redirect:/books";
+        return "redirect:/books/my-books";
     }
 
     @GetMapping("/{bookId}/share")

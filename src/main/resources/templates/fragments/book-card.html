@@ -19,9 +19,8 @@
         th:classappend="${book.shareable ? 'border-success' : ''} + ' ' + ${book.archived ? 'border-warning' : ''}">
 
         <img height="200"
-            th:src="${book.cover != null ? 'data:image/jpg;base64,' + book.cover : 'https://source.unsplash.com/user/c_v_r/1900x800'}"
+            th:src="${book.cover != null} ? @{/{path}(path=${book.cover})} : 'https://source.unsplash.com/user/c_v_r/1900x800'"
             class="card-img-top" alt="Book cover">
-
         <div class="card-body overflow-scroll">
             <h5 class="card-title fs-6 text-nowrap fw-bold mb-1">
                 <i class="fa-solid fa-book"></i>&nbsp;<span th:text="${book.title}">Book Title</span>

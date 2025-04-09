@@ -25,7 +25,7 @@ public class BookResponse {
     private String ownerName;
 
     // cover picture of the book
-    private byte[] cover;
+    private String cover;
 
     private double rate;
 

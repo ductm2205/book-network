@@ -7,19 +7,18 @@ import se2.BookNetwork.core.responses.BookResponse;
 import se2.BookNetwork.core.responses.BorrowedBookResponse;
 import se2.BookNetwork.models.common.Book;
 import se2.BookNetwork.models.common.BookTransaction;
-import se2.BookNetwork.utils.FileUtils;
 
 @Service
 public class BookMapper {
 
     public Book toBook(BookRequest bookRequest) {
         return Book.builder()
-                .title(bookRequest.title())
-                .authorName(bookRequest.authorName())
-                .isbn(bookRequest.isbn())
-                .synopsis(bookRequest.synopsis())
+                .title(bookRequest.getTitle())
+                .authorName(bookRequest.getAuthorName())
+                .isbn(bookRequest.getIsbn())
+                .synopsis(bookRequest.getSynopsis())
                 .archived(false)
-                .shareable(bookRequest.shareable())
+                .shareable(bookRequest.isShareable())
                 .build();
     }
 
@@ -33,7 +32,7 @@ public class BookMapper {
                 .archived(book.isArchived())
                 .shareable(book.isShareable())
                 .ownerName(book.getOwner().getFullName())
-                .cover(FileUtils.readFileFromLocation(book.getBookCover()))
+                .cover(book.getBookCover())
                 .build();
     }
 

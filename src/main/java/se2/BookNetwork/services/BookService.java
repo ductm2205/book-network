@@ -19,6 +19,7 @@ import se2.BookNetwork.core.responses.BookResponse;
 import se2.BookNetwork.core.responses.BorrowedBookResponse;
 import se2.BookNetwork.exceptions.UnauthorizedOperationException;
 import se2.BookNetwork.interfaces.IBookService;
+import se2.BookNetwork.interfaces.IFileService;
 import se2.BookNetwork.models.common.Book;
 import se2.BookNetwork.models.common.BookTransaction;
 import se2.BookNetwork.models.common.User;
@@ -34,11 +35,11 @@ public class BookService implements IBookService {
     private final BookMapper bookMapper;
     private final BookRepository bookRepository;
     private final BookTransactionRepository bookTransactionRepository;
+    private final IFileService fileService;
 
     @Override
     public Integer save(BookRequest request, Authentication connectedUser) {
         Object principal = connectedUser.getPrincipal();
-        System.out.println("Principal class: " + principal.getClass().getName());
         if (principal instanceof User user) {
             var book = bookMapper.toBook(request);
             book.setOwner(user);
@@ -216,17 +217,57 @@ public class BookService implements IBookService {
 
     @Override
     public Integer returnBook(Integer bookId, Authentication connectedUser) {
-        throw new UnsupportedOperationException("Unimplemented method 'returnBook'");
+        Book book = bookRepository.findById(bookId)
+                .orElseThrow(() -> new EntityNotFoundException());
+
+        User user = (User) connectedUser.getPrincipal();
+
+        if (BookHelper.isLocked(book)) {
+            throw new UnauthorizedOperationException("The book is currently locked. Please try again later");
+        }
+
+        if (BookHelper.isOwnedByThisUser(book, user)) {
+            throw new UnauthorizedOperationException("You cant return your own book");
+        }
+
+        BookTransaction bookTransaction = bookTransactionRepository.findBorrowedBookByUser(user.getId(), book.getId())
+                .orElseThrow(() -> new UnauthorizedOperationException("You have not borrowed this book yet!"));
+
+        bookTransaction.setReturned(true);
+        return bookTransactionRepository.save(bookTransaction).getId();
     }
 
     @Override
     public Integer approveReturn(Integer bookId, Authentication connectedUser) {
-        throw new UnsupportedOperationException("Unimplemented method 'approveReturn'");
+        Book book = bookRepository.findById(bookId)
+                .orElseThrow(() -> new EntityNotFoundException());
+
+        User user = (User) connectedUser.getPrincipal();
+
+        if (BookHelper.isLocked(book)) {
+            throw new UnauthorizedOperationException("The book is currently locked. Please try again later");
+        }
+
+        if (!BookHelper.isOwnedByThisUser(book, user)) {
+            throw new UnauthorizedOperationException("You do not own this book");
+        }
+
+        BookTransaction bookTransaction = bookTransactionRepository.findLentBookByUser(user.getId(), book.getId())
+                .orElseThrow(() -> new UnauthorizedOperationException("The book is not returned yet!"));
+
+        bookTransaction.setReturnApproved(true);
+        return bookTransactionRepository.save(bookTransaction).getId();
     }
 
     @Override
     public void uploadBookCover(MultipartFile file, Integer bookId, Authentication connectedUser) {
-        throw new UnsupportedOperationException("Unimplemented method 'uploadBookCover'");
+        Book book = bookRepository.findById(bookId)
+                .orElseThrow(() -> new EntityNotFoundException());
+
+        var cover = fileService.saveFile(file, connectedUser.getName());
+
+        book.setBookCover(cover);
+        bookRepository.save(book);
     }
 
 }

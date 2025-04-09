@@ -23,14 +23,13 @@
         </div>
         <hr>
 
-        <div class="d-flex justify-content-end mb-3">
-            <a th:href="@{/books/add}" class="btn btn-outline-primary">
-                <i class="fas fa-plus"></i>&nbsp;New book
-            </a>
-        </div>
-
         <!-- Books display -->
         <div class="container mb-4">
+            <div class="d-flex justify-content-end mb-3">
+                <a th:href="@{/books/manage}" class="btn btn-outline-primary">
+                    <i class="fas fa-plus"></i>&nbsp;New book
+                </a>
+            </div>
             <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
                 <div th:each="book : ${books}" class="col">
                     <div th:replace="~{fragments/book-card :: bookCard(
@@ -40,7 +39,7 @@
                         @{'/books/' + ${book.id} + '/archive'}, 
                         @{'/books/' + ${book.id} + '/waitinglist/add'}, 
                         @{'/books/' + ${book.id} + '/borrow'}, 
-                        @{'/books/' + ${book.id} + '/edit'}, 
+                        @{'/books/' + ${book.id} + '/manage'}, 
                         @{'/books/' + ${book.id}}
                         )}">
                     </div>

@@ -26,7 +26,7 @@
             <div class="d-flex gap-2">
                 <div class="col-3">
                     <img class="rounded-1" width="100%" height="100%"
-                        th:src="${book.cover != null ? 'data:image/jpg;base64,' + book.cover : 'https://source.unsplash.com/user/c_v_r/1900x800'}"
+                        th:src="${book.cover != null} ? @{/{path}(path=${book.cover})} : 'https://source.unsplash.com/user/c_v_r/1900x800'"
                         alt="Book Cover">
                 </div>
                 <div class="col-9">
@@ -58,8 +58,8 @@
             <h3>Feedbacks</h3>
 
             <div class="d-flex flex-column justify-content-end">
-                <div th:if="${feedbacks != null and #lists.isNotEmpty(feedbacks)}" th:each="feedback : ${feedbacks.getElements()}"
-                    class="mb-3 p-3 border rounded">
+                <div th:if="${feedbacks != null and #lists.isNotEmpty(feedbacks)}"
+                    th:each="feedback : ${feedbacks.getElements()}" class="mb-3 p-3 border rounded">
                     <div class="d-flex gap-2">
                         <!-- Star Rating for Feedback -->
                         <div class="d-flex" th:with="rating=${feedback.note != null ? feedback.note : 0}">
@@ -86,7 +86,7 @@
             </div>
         </div>
 
-    </th:block>
+        </th:block>
 
 </body>
 
