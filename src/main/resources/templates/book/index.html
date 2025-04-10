@@ -9,7 +9,6 @@
 
 <body>
     <div layout:fragment="content">
-        <h3>Books list</h3>
 
         <!-- Toast Container -->
         <div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 11">
@@ -24,10 +23,10 @@
             </div>
         </div>
 
-        <hr>
-
         <!-- Books display -->
         <div class="container mb-4">
+            <h3>Books list</h3>
+            <hr>
             <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
                 <div th:each="book : ${books}" class="col">
                     <div th:replace="~{fragments/book-card :: bookCard(

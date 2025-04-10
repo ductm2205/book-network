@@ -52,7 +52,7 @@
         </div>
         <!-- Pagination fragment -->
         <div
-            th:replace="fragments/pagination :: pagination(${currentPage}, ${pageSize}, ${totalPages}, ${currentPage}, '/my-books')">
+            th:replace="fragments/pagination :: pagination(${currentPage}, ${pageSize}, ${totalPages}, ${currentPage}, '/books/my-books')">
         </div>
         <!-- JavaScript to show toast when message exists -->
         <script th:inline="javascript">

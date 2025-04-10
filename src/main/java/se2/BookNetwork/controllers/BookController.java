@@ -35,7 +35,7 @@ public class BookController {
     private final IFeedbackService feedbackService;
     private final IFileService fileService;
 
-    private static final String DEFAULT_PAGE_SIZE = "20";
+    private static final String DEFAULT_PAGE_SIZE = "8";
 
     @GetMapping()
     public String getAllBooks(
