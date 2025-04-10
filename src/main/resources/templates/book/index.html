@@ -12,7 +12,7 @@
         <h3>Books list</h3>
 
         <!-- Toast Container -->
-        <div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 11">
+        <div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 11">
             <div id="messageToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
                 <div class="toast-header"
                     th:classappend="${level == 'error' ? 'bg-danger text-white' : 'bg-success text-white'}">
@@ -32,7 +32,7 @@
                 <div th:each="book : ${books}" class="col">
                     <div th:replace="~{fragments/book-card :: bookCard(
                         ${book}, 
-                        ${book.ownerName == currentUser}, 
+                        ${book.ownerName == currentUser.fullName}, 
                         @{'/books/' + ${book.id} + '/share'}, 
                         @{'/books/' + ${book.id} + '/archive'}, 
                         @{'/books/' + ${book.id} + '/waitinglist/add'}, 

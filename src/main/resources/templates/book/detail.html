@@ -5,7 +5,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Book Details</title>
     <style>
         .star-rating {
             color: #ffc107;
@@ -18,43 +17,40 @@
 </head>
 
 <body>
-    <!-- Content fragment that will be inserted into the layout template -->
     <div layout:fragment="content">
         <!-- Book Details Section -->
-        <div class="p-2">
-            <hr>
-            <div class="d-flex gap-2">
-                <div class="col-3">
-                    <img class="rounded-1" width="100%" height="100%"
-                        th:src="${book.cover != null} ? @{/{path}(path=${book.cover})} : 'https://source.unsplash.com/user/c_v_r/1900x800'"
-                        alt="Book Cover">
-                </div>
-                <div class="col-9">
-                    <h2><i class="fa-solid fa-book"></i>&nbsp;<span th:text="${book.title}">Book Title</span></h2>
-                    <h4><i class="fa-solid fa-user-check"></i>&nbsp;<span th:text="${book.authorName}">Author
-                            Name</span></h4>
-                    <h5><i class="fas fa-code"></i>&nbsp;<span th:text="${book.isbn}">ISBN</span></h5>
-                    <h6 class="card-subtitle fs-6 text-secondary"><i class="fas fa-user"></i>&nbsp;<span
-                            th:text="${book.ownerName}">Owner</span></h6>
-                    <div class="d-flex gap-2">
-                        <!-- Star Rating -->
-                        <div class="d-flex" th:with="rating=${book.rate != null ? book.rate : 0}">
-                            <span th:each="i : ${#numbers.sequence(1, 5)}">
-                                <i class="fas fa-star"
-                                    th:class="${i <= rating ? 'fas fa-star star-rating' : 'far fa-star star-empty'}"></i>
-                            </span>
-                        </div>
-                        <span th:text="${book.rate}">0.0</span>
-                        (<span th:text="${feedbacks != null ? feedbacks.getTotalElements() : 0}">0</span> feedbacks)
+        <h3>Book Details</h3>
+        <hr>
+        <div class="row p-2 mb-4">
+            <div class="col-3">
+                <img class="rounded-1" width="100%" height="100%"
+                    th:src="${book.cover != null} ? @{/{path}(path=${book.cover})} : 'src/image_url'" alt="Book Cover">
+            </div>
+            <div class="col-9">
+                <h2><i class="fa-solid fa-book"></i>&nbsp;<span th:text="${book.title}">Book Title</span></h2>
+                <h4><i class="fa-solid fa-user-check"></i>&nbsp;<span th:text="${book.authorName}">Author
+                        Name</span></h4>
+                <h5><i class="fas fa-code"></i>&nbsp;<span th:text="${book.isbn}">ISBN</span></h5>
+                <h6 class="card-subtitle fs-6 text-secondary"><i class="fas fa-user"></i>&nbsp;<span
+                        th:text="${book.ownerName}">Owner</span></h6>
+                <div class="d-flex gap-2">
+                    <!-- Star Rating -->
+                    <div class="d-flex" th:with="rating=${book.rate != null ? book.rate : 0}">
+                        <span th:each="i : ${#numbers.sequence(1, 5)}">
+                            <i class="fas fa-star"
+                                th:class="${i <= rating ? 'fas fa-star star-rating' : 'far fa-star star-empty'}"></i>
+                        </span>
                     </div>
-                    <hr>
-                    <p th:text="${book.synopsis}">Book synopsis goes here...</p>
+                    <span th:text="${book.rate}">0.0</span>
+                    (<span th:text="${feedbacks != null ? feedbacks.getTotalElements() : 0}">0</span> feedbacks)
                 </div>
+                <hr>
+                <p th:text="${book.synopsis}">Book synopsis goes here...</p>
             </div>
         </div>
 
         <!-- Feedbacks Section -->
-        <div class="mt-4">
+        <div class="">
             <h3>Feedbacks</h3>
 
             <div class="d-flex flex-column justify-content-end">

@@ -52,9 +52,6 @@ public class BookController {
         model.addAttribute("totalItems", pageResponse.getTotalElements());
         model.addAttribute("pageSize", pageSize);
 
-        User currentUser = (User) connectedUser.getPrincipal();
-
-        model.addAttribute("currentUser", currentUser.getFullName());
         model.addAttribute("activeTab", "books");
         model.addAttribute("title", "Books");
 
@@ -77,6 +74,7 @@ public class BookController {
         model.addAttribute("pageSize", pageSize);
         model.addAttribute("totalPages", feedbacks.getTotalPages());
 
+        model.addAttribute("title", "Book Detail");
         return "book/detail";
     }
 
