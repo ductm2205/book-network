@@ -15,8 +15,9 @@
                 <p class="p-0 m-0" th:each="error : ${errors}" th:text="${error}"></p>
             </div>
             <div class="d-flex gap-2">
-                <form class="row g-3 container" th:action="@{/books/save}" method="post" th:object="${bookRequest}"
-                    enctype="multipart/form-data">
+                <form class="row g-3 container"
+                    th:action="${bookRequest.id == null} ? @{/books/create} : @{/books/{id}/update(id=${bookRequest.id})}"
+                    method="post" th:object="${bookRequest}" enctype="multipart/form-data">
                     <div class="col-4">
                         <img class="rounded-1" width="100%" height="100%"
                             th:src="${book != null && book.cover != null} ? @{/{path}(path=${book.cover})} : 'https://source.unsplash.com/user/c_v_r/1900x800'"
