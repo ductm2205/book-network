@@ -150,27 +150,6 @@ public class BookController {
         return "book/manage-book";
     }
 
-    @GetMapping("/{bookId}/manage")
-    public String editBookPage(@PathVariable("bookId") Integer bookId, Model model) {
-        var book = bookService.getBookById(bookId);
-        if (book != null) {
-            BookRequest bookRequest = new BookRequest(null, "", "", "", "", false);
-            bookRequest.setId(book.getId());
-            bookRequest.setTitle(book.getTitle());
-            bookRequest.setAuthorName(book.getAuthorName());
-            bookRequest.setIsbn(book.getIsbn());
-            bookRequest.setSynopsis(book.getSynopsis());
-            bookRequest.setShareable(book.isShareable());
-
-            model.addAttribute("title", "Edit Book");
-            model.addAttribute("activeTab", "books");
-            model.addAttribute("bookRequest", bookRequest);
-            model.addAttribute("book", book);
-            return "book/manage-book";
-        }
-        return "redirect:/books/my-books";
-    }
-
     @PostMapping("/save")
     public String saveBook(
             @Valid BookRequest bookRequest,
@@ -208,6 +187,66 @@ public class BookController {
         }
 
         redirectAttributes.addFlashAttribute("message", "Book saved successfully with ID: " + savedBookId);
+        redirectAttributes.addFlashAttribute("level", "success");
+        return "redirect:/books/my-books";
+    }
+
+    @GetMapping("/{bookId}/manage")
+    public String editBookPage(@PathVariable("bookId") Integer bookId, Model model) {
+        var book = bookService.getBookById(bookId);
+        if (book != null) {
+            BookRequest bookRequest = new BookRequest(null, "", "", "", "", false);
+            bookRequest.setId(book.getId());
+            bookRequest.setTitle(book.getTitle());
+            bookRequest.setAuthorName(book.getAuthorName());
+            bookRequest.setIsbn(book.getIsbn());
+            bookRequest.setSynopsis(book.getSynopsis());
+            bookRequest.setShareable(book.isShareable());
+
+            model.addAttribute("title", "Edit Book");
+            model.addAttribute("activeTab", "books");
+            model.addAttribute("bookRequest", bookRequest);
+            model.addAttribute("book", book);
+            return "book/manage-book";
+        }
+        return "redirect:/books/my-books";
+    }
+
+    @PostMapping("/{id}/update")
+    public String updateBook(
+            @PathVariable("id") Integer id,
+            @Valid BookRequest bookRequest,
+            BindingResult bindingResult,
+            @RequestParam(value = "file", required = false) MultipartFile file,
+            Authentication connectedUser,
+            RedirectAttributes redirectAttributes,
+            Model model) {
+
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("errors", bindingResult.getAllErrors()
+                    .stream().map(error -> error.getDefaultMessage()).collect(Collectors.toList()));
+            model.addAttribute("bookRequest", bookRequest);
+            model.addAttribute("title", "Edit Book");
+            model.addAttribute("activeTab", "books");
+            return "book/manage-book";
+        }
+
+        this.bookService.update(id, bookRequest, connectedUser);
+
+        // Handle the cover upload if a file is provided
+        if (file != null && !file.isEmpty()) {
+            User user = (User) connectedUser.getPrincipal();
+            String filePath = fileService.saveFile(file, user.getUsername());
+            if (filePath != null) {
+                bookService.uploadBookCover(file, id, connectedUser);
+            } else {
+                redirectAttributes.addFlashAttribute("message", "Book saved, but cover upload failed.");
+                redirectAttributes.addFlashAttribute("level", "warning");
+                return "redirect:/books/my-books";
+            }
+        }
+
+        redirectAttributes.addFlashAttribute("message", "Book updated successfully!");
         redirectAttributes.addFlashAttribute("level", "success");
         return "redirect:/books/my-books";
     }

@@ -53,6 +53,26 @@ public class BookService implements IBookService {
     }
 
     @Override
+    public Integer update(Integer id, BookRequest request, Authentication connectedUser) {
+        var book = this.bookRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Book not found!"));
+        Object principal = connectedUser.getPrincipal();
+        if (principal instanceof User user) {
+            if (!book.getOwner().getId().equals(user.getId())) {
+                throw new UnauthorizedOperationException("You do not have permission to update this book.");
+            }
+
+            updateBookFromRequest(request, book);
+
+            Book savedBook = bookRepository.save(book);
+            System.out.println(
+                    "Saved book ID: " + savedBook.getId() + ", type: " + savedBook.getId().getClass().getName());
+            return savedBook.getId();
+        } else {
+            throw new IllegalStateException("Unexpected principal type: " + principal.getClass().getName());
+        }
+    }
+
+    @Override
     public BookResponse getBookById(Integer id) {
         return bookRepository.findById(id).map(bookMapper::toBookResponse)
                 .orElseThrow(() -> new EntityNotFoundException("Book not found"));
@@ -268,6 +288,20 @@ public class BookService implements IBookService {
 
         book.setBookCover(cover);
         bookRepository.save(book);
+    }
+
+    /**
+     * Update book using data from request
+     * 
+     * @param request
+     * @param book
+     */
+    private static void updateBookFromRequest(BookRequest request, Book book) {
+        book.setTitle(request.getTitle());
+        book.setAuthorName(request.getAuthorName());
+        book.setIsbn(request.getIsbn());
+        book.setSynopsis(request.getSynopsis());
+        book.setShareable(request.isShareable());
     }
 
 }
