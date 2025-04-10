@@ -1,5 +1,5 @@
 # Single-stage image for development with hot reloading
-FROM maven:3.9.6-eclipse-temurin-17
+FROM maven:3.9.9-eclipse-temurin-17
 
 # Set working directory
 WORKDIR /app

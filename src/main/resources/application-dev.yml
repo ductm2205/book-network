@@ -17,11 +17,19 @@ spring:
     suffix: .html
     encoding: UTF-8
     cache: false
-  
+
   security:
     user:
       name: admin
       password: admin1234
+
+  devtools:
+    restart:
+      enabled: true
+      poll-interval: 2s
+      quiet-period: 1s
+    livereload:
+      enabled: true
 
 logging:
   level:
