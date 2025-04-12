@@ -1,7 +1,7 @@
 package se2.BookNetwork.models.common;
+
 import java.beans.Transient;
 import java.util.List;
-
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
@@ -44,7 +44,8 @@ public class Book extends Item {
         if (feedbacks == null || feedbacks.isEmpty()) {
             return 0.0;
         }
-        var rate = this.feedbacks.stream().mapToDouble(Feedback::getRate).average().orElse(0.0);
+        var rate = this.feedbacks.stream().filter(feedback -> feedback.getRate() != null).mapToDouble(Feedback::getRate)
+                .average().orElse(0.0);
         return Math.round(rate * 10.0) / 10f;
     }
 }

@@ -34,14 +34,11 @@
                 <h6 class="card-subtitle fs-6 text-secondary"><i class="fas fa-user"></i>&nbsp;<span
                         th:text="${book.ownerName}">Owner</span></h6>
                 <div class="d-flex gap-2">
-                    <!-- Star Rating -->
-                    <div class="d-flex" th:with="rating=${book.rate != null ? book.rate : 0}">
-                        <span th:each="i : ${#numbers.sequence(1, 5)}">
-                            <i class="fas fa-star"
-                                th:class="${i <= rating ? 'fas fa-star star-rating' : 'far fa-star star-empty'}"></i>
-                        </span>
+                    <!-- Star Rating for Feedback -->
+                    <div class="d-flex gap-2">
+                        <div th:replace="~{fragments/rating :: rating(${book.rate})}"></div>
+                        <span class="fw-bold" th:if="${book.rate > 0}" th:text="${book.rate}">Rating</span>
                     </div>
-                    <span th:text="${book.rate}">0.0</span>
                     (<span th:text="${feedbacks != null ? feedbacks.getTotalElements() : 0}">0</span> feedbacks)
                 </div>
                 <hr>
@@ -54,17 +51,14 @@
             <h3>Feedbacks</h3>
 
             <div class="d-flex flex-column justify-content-end">
-                <div th:if="${feedbacks != null and #lists.isNotEmpty(feedbacks)}"
-                    th:each="feedback : ${feedbacks.getElements()}" class="mb-3 p-3 border rounded">
+                <div th:if="${feedbacks != null}" th:each="feedback : ${feedbacks.getElements()}"
+                    class="mb-3 p-3 border rounded">
                     <div class="d-flex gap-2">
                         <!-- Star Rating for Feedback -->
-                        <div class="d-flex" th:with="rating=${feedback.note != null ? feedback.note : 0}">
-                            <span th:each="i : ${#numbers.sequence(1, 5)}">
-                                <i class="fas fa-star"
-                                    th:class="${i <= rating ? 'fas fa-star star-rating' : 'far fa-star star-empty'}"></i>
-                            </span>
+                        <div class="d-flex gap-2">
+                            <div th:replace="~{fragments/rating :: rating(${feedback.rate})}"></div>
+                            <span class="fw-bold" th:if="${feedback.rate > 0}" th:text="${feedback.rate}">Rating</span>
                         </div>
-                        <strong th:text="${feedback.note}">5.0</strong>
                     </div>
                     <p th:text="${feedback.comment}">Feedback comment goes here...</p>
                 </div>

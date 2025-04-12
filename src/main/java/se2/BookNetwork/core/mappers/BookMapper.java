@@ -33,19 +33,21 @@ public class BookMapper {
                 .shareable(book.isShareable())
                 .ownerName(book.getOwner().getFullName())
                 .cover(book.getBookCover())
+                .rate(book.getRate())
                 .build();
     }
 
     public BorrowedBookResponse toBorrowedBookResponse(BookTransaction transaction) {
         var book = transaction.getBook();
         return BorrowedBookResponse.builder()
-                .id(transaction.getUser().getId())
+                .id(transaction.getBook().getId())
                 .title(book.getTitle())
                 .authorName(book.getAuthorName())
                 .isbn(book.getIsbn())
                 .ownerName(book.getOwner().getFullName())
                 .isReturned(transaction.isReturned())
                 .isReturnApproved(transaction.isReturnApproved())
+                .rate(book.getRate())
                 .build();
     }
 }

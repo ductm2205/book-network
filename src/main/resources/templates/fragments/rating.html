@@ -4,15 +4,28 @@
 
 <body>
     <div th:fragment="rating(rating)" class="rating">
-        <!-- Using integer part for full stars -->
-        <i th:each="i : ${#numbers.sequence(1, rating.intValue())}" class="fas fa-star text-warning"></i>
+        <!-- 5-star rating system with fixed number of stars -->
+        <th:block th:with="ratingValue=${rating != null ? rating : 0}">
+            <!-- First star -->
+            <i th:class="${ratingValue >= 1 ? 'fas fa-star text-warning' : 
+                         (ratingValue >= 0.5 ? 'fas fa-star-half-alt text-warning' : 'far fa-star')}"></i>
 
-        <!-- Half star (if applicable) -->
-        <i th:if="${rating - rating.intValue() >= 0.5}" class="fas fa-star-half-alt text-warning"></i>
+            <!-- Second star -->
+            <i th:class="${ratingValue >= 2 ? 'fas fa-star text-warning' : 
+                         (ratingValue >= 1.5 ? 'fas fa-star-half-alt text-warning' : 'far fa-star')}"></i>
 
-        <!-- Empty stars (calculating the remaining stars to make 5) -->
-        <i th:each="i : ${#numbers.sequence(1, 5 - (rating.intValue() + (rating - rating.intValue() >= 0.5 ? 1 : 0)))}"
-            class="far fa-star"></i>
+            <!-- Third star -->
+            <i th:class="${ratingValue >= 3 ? 'fas fa-star text-warning' : 
+                         (ratingValue >= 2.5 ? 'fas fa-star-half-alt text-warning' : 'far fa-star')}"></i>
+
+            <!-- Fourth star -->
+            <i th:class="${ratingValue >= 4 ? 'fas fa-star text-warning' : 
+                         (ratingValue >= 3.5 ? 'fas fa-star-half-alt text-warning' : 'far fa-star')}"></i>
+
+            <!-- Fifth star -->
+            <i th:class="${ratingValue >= 5 ? 'fas fa-star text-warning' : 
+                         (ratingValue >= 4.5 ? 'fas fa-star-half-alt text-warning' : 'far fa-star')}"></i>
+        </th:block>
     </div>
 </body>
 
