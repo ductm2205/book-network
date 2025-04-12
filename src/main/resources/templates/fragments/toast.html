@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+</head>
+
+<body>
+    <!-- Toast Fragment -->
+    <div th:fragment="toast(message, level)" class="toast-container position-fixed bottom-0 end-0 p-3"
+        style="z-index: 11">
+        <div id="messageToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast-header"
+                th:classappend="${level == 'error' ? 'bg-danger text-white' : 'bg-success text-white'}">
+                <strong class="me-auto" th:text="${level == 'error' ? 'Error' : 'Success'}">Notification</strong>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast"
+                    aria-label="Close"></button>
+            </div>
+            <div class="toast-body" th:text="${message}">Message content</div>
+        </div>
+        <!-- JavaScript to show toast when message exists -->
+        <script th:inline="javascript" th:if="${message != null}">
+            document.addEventListener('DOMContentLoaded', function () {
+                const toastEl = document.getElementById('messageToast');
+                const toast = new bootstrap.Toast(toastEl);
+                toast.show();
+            });
+        </script>
+    </div>
+
+</body>
+
+</html>

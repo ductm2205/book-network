@@ -3,6 +3,8 @@
     layout:decorate="~{layout}" lang="en">
 
 <div layout:fragment="content">
+    <!-- Toast Container -->
+    <div th:replace="~{fragments/toast :: toast(${message}, ${level})}"></div>
     <h2>My returned books</h2>
     <hr>
     <!-- Borrowed Books Table -->
@@ -30,7 +32,8 @@
                     </td>
                     <td>
                         <div class="d-flex gap-2 align-items-baseline">
-                            <i class="fa-regular fa-paper-plane" th:classappend="${book.returned ? 'text-success' : ''}"></i>
+                            <i class="fa-regular fa-paper-plane"
+                                th:classappend="${book.returned ? 'text-success' : ''}"></i>
                             <i th:if="${book.returnApproved}" class="fa-solid fa-circle-check"
                                 th:classappend="${book.returnApproved ? 'text-success' : ''}"></i>
                             <a th:if="${!book.returnApproved}" th:href="@{/books/approve-return/{id}(id=${book.id})}"

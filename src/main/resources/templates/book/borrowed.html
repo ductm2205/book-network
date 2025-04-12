@@ -3,6 +3,8 @@
     layout:decorate="~{layout}" lang="en">
 
 <div layout:fragment="content">
+    <!-- Toast Container -->
+    <div th:replace="~{fragments/toast :: toast(${message}, ${level})}"></div>
     <h2>My borrowed books</h2>
     <hr>
     <!-- Borrowed Books Table -->

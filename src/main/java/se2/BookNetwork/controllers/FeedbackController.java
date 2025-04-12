@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -39,9 +40,12 @@ public class FeedbackController {
     public String saveFeedback(
             @Valid FeedbackRequest request,
             Authentication currentUser,
-            Model model) {
+            Model model,
+            RedirectAttributes redirectAttributes) {
         bookService.returnBook(request.getBookId(), currentUser);
         feedbackService.saveFeedback(request, currentUser);
+        redirectAttributes.addFlashAttribute("message", "Book returned successfully!");
+        redirectAttributes.addFlashAttribute("level", "success");
         return "redirect:/books/my-borrowed-books";
     }
 

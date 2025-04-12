@@ -322,9 +322,14 @@ public class BookController {
             Authentication authentication,
             RedirectAttributes redirectAttributes,
             HttpServletRequest request) {
-        bookService.approveReturn(bookId, authentication);
-        redirectAttributes.addFlashAttribute("message", "Book return approved successfully!");
-        redirectAttributes.addFlashAttribute("level", "success");
+        try {
+            bookService.approveReturn(bookId, authentication);
+            redirectAttributes.addFlashAttribute("message", "Book return approved successfully!");
+            redirectAttributes.addFlashAttribute("level", "success");
+        } catch (UnauthorizedOperationException | EntityNotFoundException ex) {
+            redirectAttributes.addFlashAttribute("message", ex.getMessage() + "!");
+            redirectAttributes.addFlashAttribute("level", "error");
+        }
         return "redirect:" + request.getHeader("Referer");
     }
 }
