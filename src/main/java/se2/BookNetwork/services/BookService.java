@@ -19,6 +19,7 @@ import se2.BookNetwork.core.responses.BookResponse;
 import se2.BookNetwork.core.responses.BorrowedBookResponse;
 import se2.BookNetwork.exceptions.UnauthorizedOperationException;
 import se2.BookNetwork.interfaces.IBookService;
+import se2.BookNetwork.interfaces.IBookTransactionService;
 import se2.BookNetwork.interfaces.IFileService;
 import se2.BookNetwork.models.common.Book;
 import se2.BookNetwork.models.common.BookTransaction;
@@ -35,6 +36,7 @@ public class BookService implements IBookService {
     private final BookMapper bookMapper;
     private final BookRepository bookRepository;
     private final BookTransactionRepository bookTransactionRepository;
+    private final IBookTransactionService bookTransactionService;
     private final IFileService fileService;
 
     @Override
@@ -219,7 +221,7 @@ public class BookService implements IBookService {
             throw new UnauthorizedOperationException("You cant borrow your own book");
         }
 
-        final boolean isAlreadyBorrowed = bookTransactionRepository.isAlreadyBorrowed(book.getId());
+        final boolean isAlreadyBorrowed = bookTransactionService.isBookBorrowed(bookId);
 
         if (isAlreadyBorrowed) {
             throw new UnauthorizedOperationException("This book is already borrowed by other");

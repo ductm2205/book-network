@@ -315,4 +315,16 @@ public class BookController {
         }
         return "redirect:" + request.getHeader("Referer");
     }
+
+    @GetMapping("/approve-return/{bookId}")
+    public String approveReturn(
+            @PathVariable("bookId") Integer bookId,
+            Authentication authentication,
+            RedirectAttributes redirectAttributes,
+            HttpServletRequest request) {
+        bookService.approveReturn(bookId, authentication);
+        redirectAttributes.addFlashAttribute("message", "Book return approved successfully!");
+        redirectAttributes.addFlashAttribute("level", "success");
+        return "redirect:" + request.getHeader("Referer");
+    }
 }

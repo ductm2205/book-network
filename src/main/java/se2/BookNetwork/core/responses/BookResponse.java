@@ -32,4 +32,6 @@ public class BookResponse {
     private boolean archived;
 
     private boolean shareable;
+
+    private boolean available;
 }

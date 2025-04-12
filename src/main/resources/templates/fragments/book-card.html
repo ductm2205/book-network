@@ -51,7 +51,8 @@
                     <i class="fas fa-circle-info text-primary"></i>
                 </a>
                 <a th:href="${onBorrow}" class="text-decoration-none">
-                    <i class="fas fa-list-check text-primary"></i>
+                    <i class="fas fa-list-check"
+                        th:classappend="${book.available} ? ' text-success' : ' text-secondary'"></i>
                 </a>
                 <a th:href="${onAddToWaitingList}" class="text-decoration-none">
                     <i class="fas fa-heart text-danger"></i>

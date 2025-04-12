@@ -35,6 +35,13 @@ public interface BookTransactionRepository extends JpaRepository<BookTransaction
         boolean isAlreadyBorrowed(@Param("bookId") Integer bookId);
 
         @Query("""
+                            SELECT COUNT(bt) > 0 FROM BookTransaction bt
+                            WHERE bt.book.id = :bookId
+                            AND bt.status IN ('BORROWED', 'RETURN_REQUESTED')
+                        """)
+        boolean isBookCurrentlyUnavailable(@Param("bookId") Integer bookId);
+
+        @Query("""
                         SELECT history
                         FROM BookTransaction history
                         WHERE history.user.id = :userId
@@ -47,7 +54,7 @@ public interface BookTransactionRepository extends JpaRepository<BookTransaction
         @Query("""
                         SELECT transaction
                         FROM BookTransaction transaction
-                        WHERE transaction.book.createdBy = :userId
+                        WHERE transaction.book.owner.id = :userId
                         AND transaction.book.id = :bookId
                         AND transaction.isReturned = true
                         AND transaction.isReturnApproved = false

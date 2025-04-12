@@ -1,6 +1,8 @@
 package se2.BookNetwork.models.common;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -9,6 +11,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
+import se2.BookNetwork.core.BookTransactionStatus;
 import se2.BookNetwork.models.Item;
 
 @SuperBuilder
@@ -29,4 +32,8 @@ public class BookTransaction extends Item {
 
     private boolean isReturned;
     private boolean isReturnApproved;
+
+    @Enumerated(EnumType.STRING)
+    private BookTransactionStatus status;
+
 }
