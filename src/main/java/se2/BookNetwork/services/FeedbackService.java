@@ -72,4 +72,20 @@ public class FeedbackService implements IFeedbackService {
                 feedbacks.isLast());
     }
 
+    @Override
+    public Integer updateFeedback(FeedbackRequest request, Authentication currentUser) {
+        var feedback = feedbackRepository.findById(request.getId())
+                .orElseThrow(() -> new EntityNotFoundException("Feedback not found!"));
+        feedback.setRate(request.getRate());
+        feedback.setComment(request.getComment());
+        return feedbackRepository.save(feedback).getId();
+    }
+
+    @Override
+    public FeedbackResponse getFeedbackById(Integer id, Authentication currentUser) {
+        var feedback = feedbackRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Feedback not found"));
+        return feedbackMapper.toFeedbackResponse(feedback, id);
+    }
+
 }

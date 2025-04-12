@@ -9,9 +9,13 @@ import se2.BookNetwork.core.responses.FeedbackResponse;
 public interface IFeedbackService {
     Integer saveFeedback(FeedbackRequest request, Authentication connectedUser);
 
+    Integer updateFeedback(FeedbackRequest request, Authentication currentUser);
+
     PageResponse<FeedbackResponse> findAllFeedbackByBookId(
             Integer bookId,
             Authentication connectedUser,
             int page,
             int size);
+
+    FeedbackResponse getFeedbackById(Integer id, Authentication currentUser);
 }

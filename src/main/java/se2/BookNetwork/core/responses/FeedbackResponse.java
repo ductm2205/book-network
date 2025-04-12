@@ -13,9 +13,14 @@ import lombok.Setter;
 @NoArgsConstructor
 public class FeedbackResponse {
 
+    private Integer id;
+
     private Double rate;
 
     private String comment;
+
+    private String owner;
+    private Integer bookId;
 
     private boolean isOwnFeedback;
 }

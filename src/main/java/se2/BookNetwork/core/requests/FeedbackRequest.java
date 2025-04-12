@@ -13,6 +13,9 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class FeedbackRequest {
+
+    private Integer id;
+
     private Double rate;
 
     private String comment;

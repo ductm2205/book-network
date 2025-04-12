@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+    layout:decorate="~{layout}" lang="en">
+
+<div layout:fragment="content">
+    <h3>Return and share feedback</h3>
+    <hr>
+    <!-- Book Return and Feedback Form -->
+    <div class="d-flex flex-column" th:if="${selectedBook != null}">
+        <div class="d-flex flex-column col-12">
+            <div class="d-flex">
+                <div class="col-3">
+                    <strong>Title</strong>
+                </div>
+                <div class="col-9" th:text="${selectedBook.title}">Book Title</div>
+            </div>
+            <div class="d-flex">
+                <div class="col-3">
+                    <strong>Author</strong>
+                </div>
+                <div class="col-9" th:text="${selectedBook.authorName}">Author Name</div>
+            </div>
+            <div class="d-flex">
+                <div class="col-3">
+                    <strong>ISBN</strong>
+                </div>
+                <div class="col-9" th:text="${selectedBook.isbn}">ISBN</div>
+            </div>
+            <div class="d-flex">
+                <div class="col-3">
+                    <strong>Rate</strong>
+                </div>
+                <div class="col-9" th:text="${selectedBook.rate}">Rate</div>
+            </div>
+        </div>
+        <hr>
+        <div class="col-12">
+            <form class="row g-3" th:action="${feedbackId == null} ? @{/feedbacks/save} : @{/feedbacks/update}"
+                method="post">
+                <input type="hidden" name="bookId" th:value="${selectedBook.id}">
+                <input type="hidden" name="feedbackId" th:if="${feedback != null}" th:value="${feedback.id}">
+                <div class="d-flex gap-3">
+                    <input title="rating" type="range" id="rate" name="rate" class="form-range w-25" min="0" max="5"
+                        step="0.5" th:value="${feedback != null ? feedback.rate : 0}"
+                        oninput="updateRating(this.value)">
+                    <div id="ratingStars">
+                        <div th:replace="~{fragments/rating :: rating(${feedback != null ? feedback.rate : 0})}"></div>
+                    </div>
+                    <span id="ratingValue" th:text="${feedback != null ? feedback.rate : 0}">0</span>
+                </div>
+                <div class="col-12">
+                    <label for="comment" class="form-label">Feedback</label>
+                    <textarea rows="4" class="form-control" id="comment" name="comment" placeholder="Feedback"
+                        th:text="${feedback != null ? feedback.comment : ''}"></textarea>
+                </div>
+                <div class="d-flex justify-content-end gap-2 col-12">
+                    <button type="submit" name="action" value="returnWithFeedback" class="btn btn-outline-primary">
+                        <i class="fas fa-save"></i>&nbsp;Rate the book & Return
+                    </button>
+                    <button type="submit" name="action" value="returnOnly" class="btn btn-outline-success">
+                        <i class="fa-solid fa-paper-plane"></i>&nbsp;Just Return
+                    </button>
+                    <a th:href="@{/my-borrowed-books}" class="btn btn-link btn text-danger">
+                        <i class="fas fa-times"></i>&nbsp;Cancel
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- JavaScript for Rating Update -->
+    <script th:inline="javascript">
+        function updateRating(value) {
+            const ratingValue = parseFloat(value);
+            document.getElementById('ratingValue').textContent = ratingValue;
+
+            // Update stars dynamically
+            const starsContainer = document.getElementById('ratingStars');
+            let starsHTML = '';
+
+            // Full stars
+            const fullStars = Math.floor(ratingValue);
+            for (let i = 0; i < fullStars; i++) {
+                starsHTML += '<i class="fas fa-star text-warning"></i>';
+            }
+
+            // Half star
+            if (ratingValue - fullStars >= 0.5) {
+                starsHTML += '<i class="fas fa-star-half-alt text-warning"></i>';
+            }
+
+            // Empty stars
+            const emptyStars = 5 - Math.ceil(ratingValue);
+            for (let i = 0; i < emptyStars; i++) {
+                starsHTML += '<i class="far fa-star"></i>';
+            }
+
+            starsContainer.innerHTML = starsHTML;
+        }
+    </script>
+</div>
+
+</html>
