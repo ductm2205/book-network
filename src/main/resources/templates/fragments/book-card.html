@@ -41,7 +41,8 @@
         <div class="card-footer d-flex gap-2 justify-content-between align-items-center">
             <div class="d-flex gap-2">
                 <div th:replace="~{fragments/rating :: rating(${book.rate})}"></div>
-                <span class="fw-bold" th:if="${book.rate > 0}" th:text="${book.rate}">Rating</span>
+                <span class="fw-bold" th:if="${book.rate > 0}"
+                    th:text="${#numbers.formatDecimal(book.rate, 0, 'COMMA', 2, 'POINT')}">Rating</span>
             </div>
 
             <!-- Standard user actions -->
