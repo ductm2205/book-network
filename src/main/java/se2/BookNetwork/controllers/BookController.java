@@ -205,6 +205,11 @@ public class BookController {
             model.addAttribute("activeTab", "books");
             model.addAttribute("bookRequest", bookRequest);
             model.addAttribute("book", book);
+
+            if (model.containsAttribute("message")) {
+                model.addAttribute("message", model.getAttribute("message"));
+                model.addAttribute("level", model.getAttribute("level"));
+            }
             return "book/manage-book";
         }
         return "redirect:/books/my-books";
@@ -229,7 +234,14 @@ public class BookController {
             return "book/manage-book";
         }
 
-        this.bookService.update(id, bookRequest, connectedUser);
+        try {
+            this.bookService.update(id, bookRequest, connectedUser);
+        } catch (UnauthorizedOperationException | EntityNotFoundException ex) {
+            System.out.println("Exception caught: " + ex.getMessage());
+            redirectAttributes.addFlashAttribute("message", ex.getMessage() + "!");
+            redirectAttributes.addFlashAttribute("level", "error");
+            return "redirect:/books/" + id + "/manage";
+        }
 
         // Handle the cover upload if a file is provided
         if (file != null && !file.isEmpty()) {

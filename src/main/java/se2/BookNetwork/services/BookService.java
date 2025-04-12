@@ -297,6 +297,9 @@ public class BookService implements IBookService {
      * @param book
      */
     private static void updateBookFromRequest(BookRequest request, Book book) {
+        if (book.isArchived() && request.isShareable()) {
+            throw new UnauthorizedOperationException("This book is archieved, not shareable");
+        }
         book.setTitle(request.getTitle());
         book.setAuthorName(request.getAuthorName());
         book.setIsbn(request.getIsbn());
