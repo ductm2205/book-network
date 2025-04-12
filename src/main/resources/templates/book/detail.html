@@ -18,8 +18,28 @@
 
 <body>
     <div layout:fragment="content">
+        <!-- Toast Container -->
+        <div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 11">
+            <div id="messageToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+                <div class="toast-header"
+                    th:classappend="${level == 'error' ? 'bg-danger text-white' : 'bg-success text-white'}">
+                    <strong class="me-auto" th:text="${level == 'error' ? 'Error' : 'Success'}">Notification</strong>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast"
+                        aria-label="Close"></button>
+                </div>
+                <div class="toast-body" th:text="${message}">Message content</div>
+            </div>
+        </div>
+
         <!-- Book Details Section -->
-        <h3>Book Details</h3>
+        <div class="head-section d-flex justify-content-between align-items-baseline">
+            <h3>Book Details</h3>
+            <button class="btn btn-outline-primary" type="button">
+                <a class="text-decoration-none" th:href="@{'/books/' + ${book.id} + '/borrow'}">
+                    Borrow
+                </a>
+            </button>
+        </div>
         <hr>
         <div class="row p-2 mb-4">
             <div class="col-3">
@@ -53,11 +73,22 @@
             <div class="d-flex flex-column justify-content-end">
                 <div th:if="${feedbacks != null}" th:each="feedback : ${feedbacks.getElements()}"
                     class="mb-3 p-3 border rounded">
-                    <div class="d-flex gap-2">
+                    <div class="d-flex justify-content-between gap-2 mb-2">
                         <!-- Star Rating for Feedback -->
                         <div class="d-flex gap-2">
                             <div th:replace="~{fragments/rating :: rating(${feedback.rate})}"></div>
                             <span class="fw-bold" th:if="${feedback.rate > 0}" th:text="${feedback.rate}">Rating</span>
+                            <div class="feedback-owner">
+                                <p th:text="${feedback.owner}"></p>
+                            </div>
+                        </div>
+                        <div th:if="${currentUser.username == feedback.owner}" class="action d-flex gap-3">
+                            <a th:href="@{'/feedbacks/' + ${feedback.id} + '/edit'}">
+                                <i class="fa fa-edit"></i>
+                            </a>
+                            <a href="">
+                                <i class="fa fa-trash text-danger"></i>
+                            </a>
                         </div>
                     </div>
                     <p th:text="${feedback.comment}">Feedback comment goes here...</p>
@@ -75,7 +106,17 @@
                 </div>
             </div>
         </div>
-
+        <!-- JavaScript to show toast when message exists -->
+        <script th:inline="javascript">
+            document.addEventListener('DOMContentLoaded', function () {
+                const message = /*[[${message}]]*/ null;
+                if (message) {
+                    const toastEl = document.getElementById('messageToast');
+                    const toast = new bootstrap.Toast(toastEl);
+                    toast.show();
+                }
+            });
+        </script>
     </div>
 
 </body>

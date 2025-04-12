@@ -15,6 +15,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import se2.BookNetwork.core.PageResponse;
@@ -302,7 +303,8 @@ public class BookController {
     public String borrowBook(
             @PathVariable("bookId") Integer bookId,
             Authentication authentication,
-            RedirectAttributes redirectAttributes) {
+            RedirectAttributes redirectAttributes,
+            HttpServletRequest request) {
         try {
             Integer bookTransactionId = bookService.borrowBook(bookId, authentication);
             redirectAttributes.addFlashAttribute("message", "Book borrowed successfully!");
@@ -311,6 +313,6 @@ public class BookController {
             redirectAttributes.addFlashAttribute("message", ex.getMessage() + "!");
             redirectAttributes.addFlashAttribute("level", "error");
         }
-        return "redirect:/books";
+        return "redirect:" + request.getHeader("Referer");
     }
 }
