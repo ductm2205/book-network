@@ -8,6 +8,18 @@
 
 <body>
     <div layout:fragment="content">
+        <!-- Toast Container -->
+        <div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 11">
+            <div id="messageToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+                <div class="toast-header"
+                    th:classappend="${level == 'error' ? 'bg-danger text-white' : 'bg-success text-white'}">
+                    <strong class="me-auto" th:text="${level == 'error' ? 'Error' : 'Success'}">Notification</strong>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast"
+                        aria-label="Close"></button>
+                </div>
+                <div class="toast-body" th:text="${message}">Message content</div>
+            </div>
+        </div>
         <div class="p-2">
             <h2>Manage my book</h2>
             <hr>
@@ -19,10 +31,10 @@
                     th:action="${bookRequest.id == null} ? @{/books/save} : @{/books/{id}/update(id=${bookRequest.id})}"
                     method="post" th:object="${bookRequest}" enctype="multipart/form-data">
                     <div class="col-4">
-                        <img class="rounded-1" width="100%" height="100%"
+                        <img class="rounded-1 mb-2" width="100%" height="90%"
                             th:src="${book != null && book.cover != null} ? @{/{path}(path=${book.cover})} : 'https://source.unsplash.com/user/c_v_r/1900x800'"
                             alt="Book cover">
-                        <div class="mt-2">
+                        <div class="">
                             <input type="hidden" name="bookId" th:if="${book != null}" th:value="${book.id}">
                             <input title="book_cover" class="form-control" type="file" id="file" name="file"
                                 accept="image/*" onchange="previewImage(this)">
@@ -30,26 +42,26 @@
                     </div>
                     <div class="col-8">
                         <input type="hidden" th:if="${book != null}" th:field="*{id}">
-                        <div class="col-12">
+                        <div class="col-12 mb-4">
                             <label for="title" class="form-label">Title</label>
                             <input type="text" class="form-control" id="title" th:field="*{title}"
                                 placeholder="Book title">
                         </div>
-                        <div class="col-md-6">
+                        <div class="col-md-6 mb-4">
                             <label for="author" class="form-label">Author name</label>
                             <input type="text" class="form-control" id="author" th:field="*{authorName}"
                                 placeholder="Author name">
                         </div>
-                        <div class="col-md-6">
+                        <div class="col-md-6 mb-4">
                             <label for="isbn" class="form-label">ISBN</label>
                             <input type="text" class="form-control" id="isbn" th:field="*{isbn}">
                         </div>
-                        <div class="col-12">
+                        <div class="col-12 mb-4">
                             <label for="synopsis" class="form-label">Synopsis</label>
                             <textarea rows="4" class="form-control" id="synopsis" th:field="*{synopsis}"
                                 placeholder="Book synopsis"></textarea>
                         </div>
-                        <div class="col-12">
+                        <div class="col-12 mb-4" th:if="${book == null}">
                             <div class="form-check">
                                 <input class="form-check-input" type="checkbox" id="gridCheck" th:field="*{shareable}">
                                 <label class="form-check-label" for="gridCheck">
@@ -80,6 +92,14 @@
                     window.selectedCoverFile = input.files[0];
                 }
             }
+            document.addEventListener('DOMContentLoaded', function () {
+                const message = /*[[${message}]]*/ null;
+                if (message) {
+                    const toastEl = document.getElementById('messageToast');
+                    const toast = new bootstrap.Toast(toastEl);
+                    toast.show();
+                }
+            });
         </script>
     </div>
 
