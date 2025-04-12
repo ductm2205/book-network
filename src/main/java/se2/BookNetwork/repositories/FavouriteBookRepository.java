@@ -11,6 +11,12 @@ import org.springframework.data.repository.query.Param;
 import se2.BookNetwork.models.common.FavouriteBook;
 
 public interface FavouriteBookRepository extends JpaRepository<FavouriteBook, Integer> {
+        @Query("""
+                        SELECT favouriteBook
+                        FROM FavouriteBook favouriteBook
+                        WHERE favouriteBook.favourite.id = :favouriteId
+                        AND favouriteBook.deletedAt is null
+                        """)
         Page<FavouriteBook> findAllByFavouriteId(Integer favouriteId, Pageable pageable);
 
         @Query("""
