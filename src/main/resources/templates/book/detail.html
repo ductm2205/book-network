@@ -34,11 +34,18 @@
         <!-- Book Details Section -->
         <div class="head-section d-flex justify-content-between align-items-baseline">
             <h3>Book Details</h3>
-            <form th:action="@{'/books/' + ${book.id} + '/borrow'}" method="get">
-                <button class="btn btn-outline-primary" type="submit" th:disabled="${!book.available}">
-                    Borrow
-                </button>
-            </form>
+            <div class="d-flex gap-2">
+                <form th:action="@{'/books/' + ${book.id} + '/borrow'}" method="get">
+                    <button class="btn btn-outline-primary" type="submit" th:disabled="${!book.available}">
+                        Borrow
+                    </button>
+                </form>
+                <form th:action="@{'/books/' + ${book.id} + '/favourite/add'}" method="get">
+                    <button class="btn btn-outline-danger" type="submit">
+                        <i class="fa fa-heart"></i>
+                    </button>
+                </form>
+            </div>
 
         </div>
         <hr>

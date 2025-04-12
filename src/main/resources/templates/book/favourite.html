@@ -5,7 +5,7 @@
 <div layout:fragment="content">
     <!-- Toast Container -->
     <div th:replace="~{fragments/toast :: toast(${message}, ${level})}"></div>
-    <h2>My borrowed books</h2>
+    <h2>My favourite books</h2>
     <hr>
     <!-- Borrowed Books Table -->
     <div th:if="${selectedBook == null}">
@@ -24,23 +24,21 @@
             <tbody>
                 <tr th:each="book, bookStat : ${books}">
                     <th scope="row" th:text="${bookStat.index + 1}">1</th>
-                    <td th:text="${book.title}">Book Title</td>
-                    <td th:text="${book.authorName}">Author Name</td>
-                    <td th:text="${book.isbn}">ISBN</td>
+                    <td th:text="${book.book.title}">Book Title</td>
+                    <td th:text="${book.book.authorName}">Author Name</td>
+                    <td th:text="${book.book.isbn}">ISBN</td>
                     <td>
                         <i class="fas fa-star text-warning"></i>
-                        <span th:text="${#numbers.formatDecimal(book.rate, 0, 'COMMA', 2, 'POINT')}">Rating</span>
+                        <span th:text="${#numbers.formatDecimal(book.book.rate, 0, 'COMMA', 2, 'POINT')}">Rating</span>
                     </td>
-                    <td th:text="${book.owner.username}">Username</td>
+                    <td th:text="${book.book.owner.username}">
+                        Owner
+                    </td>
                     <td>
                         <div class="d-flex gap-2 align-items-baseline">
-                            <i th:if="${book.returned}" class="fa-regular fa-paper-plane text-success"></i>
-                            <a th:if="${!book.returned}" th:href="@{/feedbacks/{id}(id=${book.id})}"
-                                class="text-decoration-none">
-                                <i class="fa-solid fa-paper-plane text-primary"></i>
+                            <a th:href="@{'/books/' + ${book.book.id} + '/favourite/remove'}">
+                                <i class="fa fa-trash text-danger"></i>
                             </a>
-                            <i class="fa-solid fa-circle-check"
-                                th:classappend="${book.returnApproved ? 'text-success' : ''}"></i>
                         </div>
                     </td>
                 </tr>

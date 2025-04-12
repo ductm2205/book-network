@@ -24,6 +24,8 @@ import se2.BookNetwork.core.responses.BookResponse;
 import se2.BookNetwork.core.responses.BorrowedBookResponse;
 import se2.BookNetwork.exceptions.UnauthorizedOperationException;
 import se2.BookNetwork.interfaces.IBookService;
+import se2.BookNetwork.interfaces.IFavouriteBookService;
+import se2.BookNetwork.interfaces.IFavouriteService;
 import se2.BookNetwork.interfaces.IFeedbackService;
 import se2.BookNetwork.interfaces.IFileService;
 import se2.BookNetwork.models.common.User;
@@ -35,6 +37,8 @@ public class BookController {
     private final IBookService bookService;
     private final IFeedbackService feedbackService;
     private final IFileService fileService;
+    private final IFavouriteBookService favouriteBookService;
+    private final IFavouriteService favouriteService;
 
     private static final String DEFAULT_PAGE_SIZE = "8";
 
@@ -100,7 +104,8 @@ public class BookController {
     }
 
     @GetMapping("/my-borrowed-books")
-    public String getBorrowedBooks(@RequestParam(defaultValue = "0") int pageNumber,
+    public String getBorrowedBooks(
+            @RequestParam(defaultValue = "0") int pageNumber,
             @RequestParam(defaultValue = DEFAULT_PAGE_SIZE) int pageSize,
             Model model,
             Authentication authentication) {
@@ -325,6 +330,68 @@ public class BookController {
         try {
             bookService.approveReturn(bookId, authentication);
             redirectAttributes.addFlashAttribute("message", "Book return approved successfully!");
+            redirectAttributes.addFlashAttribute("level", "success");
+        } catch (UnauthorizedOperationException | EntityNotFoundException ex) {
+            redirectAttributes.addFlashAttribute("message", ex.getMessage() + "!");
+            redirectAttributes.addFlashAttribute("level", "error");
+        }
+        return "redirect:" + request.getHeader("Referer");
+    }
+
+    @GetMapping("/favourites")
+    public String getAllFavouriteBooks(
+            @RequestParam(defaultValue = "0") int pageNumber,
+            @RequestParam(defaultValue = DEFAULT_PAGE_SIZE) int pageSize,
+            Authentication authentication,
+            RedirectAttributes redirectAttributes,
+            HttpServletRequest request,
+            Model model) {
+        User user = (User) authentication.getPrincipal();
+        var favourite = favouriteService.getById(user.getFavourite().getId());
+        var books = favouriteBookService.getAllFavouriteBooks(pageNumber, pageSize, favourite.getId());
+
+        model.addAttribute("books", books.getElements());
+        model.addAttribute("currentPage", books.getPageNumber());
+        model.addAttribute("totalPages", books.getTotalPages());
+        model.addAttribute("pageSize", books.getPageSize());
+        model.addAttribute("totalItems", books.getTotalElements());
+        model.addAttribute("activeTab", "my-favourites");
+        model.addAttribute("title", "My Favourite Books");
+        return "book/favourite";
+    }
+
+    @GetMapping("/{bookId}/favourite/add")
+    public String addToFavourite(
+            @PathVariable("bookId") Integer bookId,
+            Authentication authentication,
+            RedirectAttributes redirectAttributes,
+            HttpServletRequest request) {
+
+        User user = (User) authentication.getPrincipal();
+        var favourite = favouriteService.getById(user.getFavourite().getId());
+        try {
+            favouriteBookService.addFavouriteBook(bookId, favourite.getId());
+            redirectAttributes.addFlashAttribute("message", "Book added to favourite!");
+            redirectAttributes.addFlashAttribute("level", "success");
+        } catch (UnauthorizedOperationException | EntityNotFoundException ex) {
+            redirectAttributes.addFlashAttribute("message", ex.getMessage() + "!");
+            redirectAttributes.addFlashAttribute("level", "error");
+        }
+        return "redirect:" + request.getHeader("Referer");
+    }
+
+    @GetMapping("/{bookId}/favourite/remove")
+    public String removeFromFavourite(
+            @PathVariable("bookId") Integer bookId,
+            Authentication authentication,
+            RedirectAttributes redirectAttributes,
+            HttpServletRequest request) {
+
+        User user = (User) authentication.getPrincipal();
+        var favourite = favouriteService.getById(user.getFavourite().getId());
+        try {
+            favouriteBookService.removeFavouriteBook(bookId, favourite.getId());
+            redirectAttributes.addFlashAttribute("message", "Book removed from favourite!");
             redirectAttributes.addFlashAttribute("level", "success");
         } catch (UnauthorizedOperationException | EntityNotFoundException ex) {
             redirectAttributes.addFlashAttribute("message", ex.getMessage() + "!");

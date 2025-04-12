@@ -2,6 +2,7 @@ package se2.BookNetwork.services;
 
 import org.springframework.stereotype.Service;
 
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import se2.BookNetwork.exceptions.FavouriteExistException;
 import se2.BookNetwork.interfaces.IFavouriteService;
@@ -39,8 +40,13 @@ public class FavouriteService implements IFavouriteService {
     }
 
     @Override
-    public Integer deleteFavourInteger(Integer favouriteId, User user) {
+    public Integer deleteFavour(Integer favouriteId, User user) {
         throw new UnsupportedOperationException("Unimplemented method 'deleteFavourInteger'");
+    }
+
+    @Override
+    public Favourite getById(Integer id) {
+        return favouriteRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Favourite not found!"));
     }
 
 }

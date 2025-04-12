@@ -14,31 +14,31 @@
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                     <li class="nav-item">
-                        <a class="nav-link" th:classappend="${activeTab == 'books' ? 'active' : ''}" aria-current="page"
+                        <a class="nav-link" th:classappend="${activeTab == 'books' ? 'text-primary' : ''}" aria-current="page"
                             th:href="@{/books}">
                             <i class="fas fa-home-alt"></i>&nbsp;Home
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" th:classappend="${activeTab == 'my-books' ? 'active' : ''}"
+                        <a class="nav-link" th:classappend="${activeTab == 'my-books' ? 'text-primary' : ''}"
                             th:href="@{/books/my-books}">
                             <i class="fas fa-book"></i>&nbsp;My books
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" th:classappend="${activeTab == 'my-waiting-list' ? 'active' : ''}"
-                            th:href="@{/books/my-waiting-list}">
-                            <i class="fas fa-heart"></i>&nbsp;My wait list
+                        <a class="nav-link" th:classappend="${activeTab == 'my-favourites' ? 'text-primary' : ''}"
+                            th:href="@{/books/favourites}">
+                            <i class="fas fa-heart"></i>&nbsp;My favourites
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" th:classappend="${activeTab == 'my-returned-books' ? 'active' : ''}"
+                        <a class="nav-link" th:classappend="${activeTab == 'my-returned-books' ? 'text-primary' : ''}"
                             th:href="@{/books/my-returned-books}">
                             <i class="fa-solid fa-truck-fast"></i>&nbsp;My returned books
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" th:classappend="${activeTab == 'my-borrowed-books' ? 'active' : ''}"
+                        <a class="nav-link" th:classappend="${activeTab == 'my-borrowed-books' ? 'text-primary' : ''}"
                             th:href="@{/books/my-borrowed-books}">
                             <i class="fas fa-list-check"></i>&nbsp;Borrowed books
                         </a>
