@@ -39,6 +39,9 @@ public class Book extends Item {
     @OneToMany(mappedBy = "book")
     private List<BookTransaction> bookTransactions;
 
+    @OneToMany(mappedBy = "book")
+    private List<FavouriteBook> favouriteBooks;
+
     @Transient
     public double getRate() {
         if (feedbacks == null || feedbacks.isEmpty()) {

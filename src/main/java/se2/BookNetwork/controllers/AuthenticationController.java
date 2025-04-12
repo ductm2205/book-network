@@ -47,7 +47,7 @@ public class AuthenticationController {
 
             // Register the user through service
             this.authenticationService.register(registrationRequest);
-            return "redirect:/auth/login?registered";
+            return "redirect:/login?registered";
             
         } catch (IllegalArgumentException e) {
             model.addAttribute(ERROR, e.getMessage());

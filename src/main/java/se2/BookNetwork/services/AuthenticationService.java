@@ -9,17 +9,19 @@ import lombok.RequiredArgsConstructor;
 import se2.BookNetwork.core.constants.Roles;
 import se2.BookNetwork.core.requests.RegistrationRequest;
 import se2.BookNetwork.interfaces.IAuthenticationService;
+import se2.BookNetwork.interfaces.IFavouriteService;
 import se2.BookNetwork.models.common.User;
 import se2.BookNetwork.repositories.RoleRepository;
 import se2.BookNetwork.repositories.UserRepository;
 
 @Service
 @RequiredArgsConstructor
-public class AuthenticationService implements IAuthenticationService{
+public class AuthenticationService implements IAuthenticationService {
 
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
+    private final IFavouriteService favouriteService;
 
     @Override
     public void register(RegistrationRequest registrationRequest) {
@@ -41,6 +43,7 @@ public class AuthenticationService implements IAuthenticationService{
                 .build();
 
         userRepository.save(user);
+        favouriteService.createFavourite(user);
     }
 
 }

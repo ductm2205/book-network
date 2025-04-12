@@ -19,6 +19,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -58,6 +59,9 @@ public class User extends BaseEntity implements UserDetails, Principal {
 
     @OneToMany(mappedBy = "user")
     private List<BookTransaction> bookTransactions;
+
+    @OneToOne(mappedBy = "owner", fetch = FetchType.LAZY)
+    private Favourite favourite;
 
     @Override
     public String getName() {
