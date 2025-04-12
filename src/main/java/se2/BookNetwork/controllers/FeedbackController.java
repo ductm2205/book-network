@@ -78,4 +78,12 @@ public class FeedbackController {
         feedbackService.updateFeedback(request, currentUser);
         return "redirect:/books/my-borrowed-books";
     }
+
+    @GetMapping("/{feedbackId}/delete")
+    public String deleteFeedback(
+            @PathVariable("feedbackId") Integer feedbackId,
+            Authentication authentication) {
+        feedbackService.deleteFeedback(feedbackId, authentication);
+        return "redirect:/books/my-borrowed-books";
+    }
 }

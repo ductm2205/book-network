@@ -11,6 +11,8 @@ public interface IFeedbackService {
 
     Integer updateFeedback(FeedbackRequest request, Authentication currentUser);
 
+    Integer deleteFeedback(Integer feedbackId, Authentication currentUser);
+
     PageResponse<FeedbackResponse> findAllFeedbackByBookId(
             Integer bookId,
             Authentication connectedUser,

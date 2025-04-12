@@ -1,5 +1,6 @@
 package se2.BookNetwork.services;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.data.domain.Page;
@@ -86,6 +87,15 @@ public class FeedbackService implements IFeedbackService {
         var feedback = feedbackRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Feedback not found"));
         return feedbackMapper.toFeedbackResponse(feedback, id);
+    }
+
+    @Override
+    public Integer deleteFeedback(Integer feedbackId, Authentication currentUser) {
+        var feedback = feedbackRepository.findById(feedbackId)
+                .orElseThrow(() -> new EntityNotFoundException("Feedback not found!"));
+        feedback.setDeletedAt(LocalDateTime.now());
+        feedbackRepository.save(feedback);
+        return 1;
     }
 
 }
