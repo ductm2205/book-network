@@ -31,7 +31,7 @@
                         <i class="fas fa-star text-warning"></i>
                         <span th:text="${#numbers.formatDecimal(book.rate, 0, 'COMMA', 2, 'POINT')}">Rating</span>
                     </td>
-                    <td th:text="${book.owner.username}">Username</td>
+                    <td th:text="${book.ownerName}">Username</td>
                     <td>
                         <div class="d-flex gap-2 align-items-baseline">
                             <i th:if="${book.returned}" class="fa-regular fa-paper-plane text-success"></i>
