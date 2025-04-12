@@ -60,7 +60,8 @@
                     <button type="submit" name="action" value="returnOnly" class="btn btn-outline-success">
                         <i class="fa-solid fa-paper-plane"></i>&nbsp;Just Return
                     </button>
-                    <a th:href="@{/my-borrowed-books}" class="btn btn-link btn text-danger">
+                    <a href="javascript:void(0)" th:onclick="'javascript:history.back();'"
+                        class="btn btn-link btn text-danger">
                         <i class="fas fa-times"></i>&nbsp;Cancel
                     </a>
                 </div>
