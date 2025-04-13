@@ -8,19 +8,6 @@
 <body>
     <div layout:fragment="content">
 
-        <!-- Toast Container -->
-        <div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 11">
-            <div id="messageToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
-                <div class="toast-header"
-                    th:classappend="${level == 'error' ? 'bg-danger text-white' : 'bg-success text-white'}">
-                    <strong class="me-auto" th:text="${level == 'error' ? 'Error' : 'Success'}">Notification</strong>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast"
-                        aria-label="Close"></button>
-                </div>
-                <div class="toast-body" th:text="${message}">Message content</div>
-            </div>
-        </div>
-
         <!-- Books display -->
         <div class="container mb-4">
             <div class="d-flex justify-content-between">
@@ -54,17 +41,6 @@
         <div
             th:replace="fragments/pagination :: pagination(${currentPage}, ${pageSize}, ${totalPages}, ${currentPage}, '/books/my-books')">
         </div>
-        <!-- JavaScript to show toast when message exists -->
-        <script th:inline="javascript">
-            document.addEventListener('DOMContentLoaded', function () {
-                const message = /*[[${message}]]*/ null;
-                if (message) {
-                    const toastEl = document.getElementById('messageToast');
-                    const toast = new bootstrap.Toast(toastEl);
-                    toast.show();
-                }
-            });
-        </script>
     </div>
 </body>
 

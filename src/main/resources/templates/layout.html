@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title th:text="${title} + ' | Book Social Network'">Default Title</title>
+    <link th:href="@{/css/styles.css}" rel="stylesheet">
     <link th:href="@{/css/bootstrap.min.css}" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
@@ -12,6 +13,8 @@
 <body>
     <div class="container" th:replace="~{fragments/menu :: menu(${activeTab})}"></div>
     <div class="container">
+        <!-- Toast Container -->
+        <div th:replace="~{fragments/toast :: toast(${message}, ${level})}"></div>
         <div layout:fragment="content"></div>
     </div>
     <script th:src="@{/js/bootstrap.bundle.min.js}"></script>
