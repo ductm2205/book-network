@@ -108,6 +108,7 @@ public class UserController {
     @PreAuthorize("hasRole('USER')")
     public String showChangePasswordForm(Model model) {
         model.addAttribute("passwordForm", new ChangePasswordRequest());
+        model.addAttribute("title", "Change Password");
         return "users/change-password";
     }
 

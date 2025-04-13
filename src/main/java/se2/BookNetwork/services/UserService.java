@@ -59,7 +59,6 @@ public class UserService implements IUserService {
 
     @Override
     @Transactional
-
     public User updateUserProfile(UpdateProfileRequest request) {
         User user = userRepository.findById(request.getId())
                 .orElseThrow(() -> new EntityNotFoundException("User not found"));
@@ -145,7 +144,7 @@ public class UserService implements IUserService {
         Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by("firstName").ascending());
         var users = userRepository.getPaginatedUsersList(pageable);
         var usersResponse = users.stream().toList();
-        return new PageResponse<>(
+        return new PageResponse<User>(
                 usersResponse,
                 users.getNumber(),
                 users.getSize(),
