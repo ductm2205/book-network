@@ -99,6 +99,16 @@ public class User extends BaseEntity implements UserDetails, Principal {
         return isEnabled;
     }
 
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
     public String getFullName() {
         return firstname + " " + lastname;
     }

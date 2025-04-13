@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
 import se2.BookNetwork.core.constants.Roles;
-import se2.BookNetwork.core.requests.RegistrationRequest;
+import se2.BookNetwork.core.requests.user.RegistrationRequest;
 import se2.BookNetwork.interfaces.IAuthenticationService;
 import se2.BookNetwork.interfaces.IFavouriteService;
 import se2.BookNetwork.models.common.User;

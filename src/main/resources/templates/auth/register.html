@@ -1,77 +1,58 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+    layout:decorate="~{layout}">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Register</title>
+    <title>Create Account</title>
 </head>
+
 <body>
-    <div class="container">
-        <h2>Register</h2>
-        
-        <div th:if="${error != null}" class="alert alert-danger" th:text="${error}"></div>
-        
-        <form th:action="@{/auth/save-user}" th:object="${regRequest}" method="post">
-            <div class="form-group">
-                <label for="firstname">First Name</label>
-                <input type="text" 
-                       class="form-control" 
-                       id="firstname" 
-                       th:field="*{firstname}" 
-                       required>
-                <span th:if="${#fields.hasErrors('firstname')}" 
-                      th:errors="*{firstname}" 
-                      class="text-danger"></span>
-            </div>
+    <div layout:fragment="content">
+        <div class="container-fluid d-flex justify-content-center align-items-center min-vh-100">
+            <div class="card container-fluid shadow">
+                <div class="card-body container-fluid">
+                    <h3 class="card-title text-center">Register</h3>
+                    <hr class="my-4">
 
-            <div class="form-group">
-                <label for="lastname">Last Name</label>
-                <input type="text" 
-                       class="form-control" 
-                       id="lastname" 
-                       th:field="*{lastname}" 
-                       required>
-                <span th:if="${#fields.hasErrors('lastname')}" 
-                      th:errors="*{lastname}" 
-                      class="text-danger"></span>
-            </div>
+                    <!-- Alert for error messages -->
+                    <div th:if="${error}" th:text="${error}" style="color: red;"></div>
+                    <form th:action="@{/register}" th:object="${registerRequest}" method="post">
+                        <div class="mb-3">
+                            <label class="form-label">First Name</label>
+                            <input class="form-control" type="text" th:field="*{firstname}" required />
+                            <span th:errors="*{firstname}" style="color: red;"></span>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Last Name</label>
+                            <input class="form-control" type="text" th:field="*{lastname}" required />
+                            <span th:errors="*{lastname}" style="color: red;"></span>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Email</label>
+                            <input class="form-control" type="email" th:field="*{email}" required />
+                            <span th:errors="*{email}" style="color: red;"></span>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Password</label>
+                            <input class="form-control" type="password" th:field="*{password}" required />
+                            <span th:errors="*{password}" style="color: red;"></span>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Confirm Password</label>
+                            <input class="form-control" type="password" th:field="*{confirmPassword}" required />
+                            <span th:errors="*{confirmPassword}" style="color: red;"></span>
+                        </div>
+                        <div class="action">
+                            <button class="btn btn-primary" type="submit" value="Register" title="Register"><i
+                                    class="fas fa-sign-in-alt"></i>&nbsp;Sign in
+                            </button>
+                        </div>
+                    </form>
 
-            <div class="form-group">
-                <label for="email">Email</label>
-                <input type="email" 
-                       class="form-control" 
-                       id="email" 
-                       th:field="*{email}" 
-                       required>
-                <span th:if="${#fields.hasErrors('email')}" 
-                      th:errors="*{email}" 
-                      class="text-danger"></span>
+                </div>
             </div>
-
-            <div class="form-group">
-                <label for="password">Password</label>
-                <input type="password" 
-                       class="form-control" 
-                       id="password" 
-                       th:field="*{password}" 
-                       required>
-                <span th:if="${#fields.hasErrors('password')}" 
-                      th:errors="*{password}" 
-                      class="text-danger"></span>
-            </div>
-
-            <div class="form-group">
-                <label for="confirmPassword">Confirm Password</label>
-                <input type="password" 
-                       class="form-control" 
-                       id="confirmPassword" 
-                       th:field="*{confirmPassword}" 
-                       required>
-            </div>
-
-            <button type="submit" class="btn btn-primary">Register</button>
-            <a th:href="@{/auth/login}" class="btn btn-secondary">Login</a>
-        </form>
+        </div>
     </div>
 </body>
+
 </html>

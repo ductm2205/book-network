@@ -10,28 +10,41 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import se2.BookNetwork.core.requests.RegistrationRequest;
+import se2.BookNetwork.core.requests.user.RegistrationRequest;
 import se2.BookNetwork.services.AuthenticationService;
 
 @Controller
-@RequestMapping(value = "auth")
+@RequestMapping()
 @RequiredArgsConstructor
 public class AuthenticationController {
-    
+
     private static final String ERROR = "error";
     private static final String REGISTER_PATH = "auth/register";
 
     private final AuthenticationService authenticationService;
 
+    @GetMapping("/login")
+    public String loginPage(Model model) {
+        model.addAttribute("title", "Login");
+        return "auth/login";
+    }
+
+    // @PostMapping("/login")
+    // public String authenticateUser(Model model) {
+    //     model.addAttribute("title", "Login");
+    //     return "login";
+    // }
+
     @GetMapping("/register")
     public String showRegistrationForm(Model model) {
-        model.addAttribute("regRequest", new RegistrationRequest());
+        model.addAttribute("registerRequest", new RegistrationRequest());
+        model.addAttribute("title", "Register");
         return REGISTER_PATH;
     }
 
-    @PostMapping("/save-user")
+    @PostMapping("/register")
     public String registerUser(
-            @ModelAttribute("regRequest") @Valid RegistrationRequest registrationRequest,
+            @ModelAttribute("registerRequest") @Valid RegistrationRequest registrationRequest,
             BindingResult bindingResult,
             Model model) {
         if (bindingResult.hasErrors()) {
@@ -48,7 +61,7 @@ public class AuthenticationController {
             // Register the user through service
             this.authenticationService.register(registrationRequest);
             return "redirect:/login?registered";
-            
+
         } catch (IllegalArgumentException e) {
             model.addAttribute(ERROR, e.getMessage());
             return REGISTER_PATH;

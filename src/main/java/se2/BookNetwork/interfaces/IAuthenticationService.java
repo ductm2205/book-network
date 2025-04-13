@@ -1,6 +1,6 @@
 package se2.BookNetwork.interfaces;
 
-import se2.BookNetwork.core.requests.RegistrationRequest;
+import se2.BookNetwork.core.requests.user.RegistrationRequest;
 
 public interface IAuthenticationService {
     /**
