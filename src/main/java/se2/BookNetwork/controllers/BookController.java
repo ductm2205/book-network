@@ -47,8 +47,12 @@ public class BookController {
             @RequestParam(name = "pageSize", defaultValue = PaginateConstants.DEFAULT_PAGE_SIZE, required = false) int pageSize,
             Authentication connectedUser,
             Model model) {
-
-        PageResponse<BookResponse> pageResponse = bookService.findAllBooks(pageNumber, pageSize, connectedUser);
+        PageResponse<BookResponse> pageResponse;
+        if (connectedUser != null) {
+            pageResponse = bookService.findAllBooks(pageNumber, pageSize, connectedUser);
+        } else {
+            pageResponse = bookService.getAllPaginatedBooks(pageNumber, pageSize);
+        }
 
         model.addAttribute("books", pageResponse.getElements());
         model.addAttribute("currentPage", pageResponse.getPageNumber());

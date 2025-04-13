@@ -85,6 +85,20 @@ public class BookService implements IBookService {
         return bookRepository.findAll();
     }
 
+    public PageResponse<BookResponse> getAllPaginatedBooks(int pageNumber, int pageSize) {
+        Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by("createdAt").descending());
+        Page<Book> books = bookRepository.findAllDisplayableBooksForHomePage(pageable);
+        List<BookResponse> bookResponse = books.stream().map(bookMapper::toBookResponse).toList();
+        return new PageResponse<>(
+                bookResponse,
+                books.getNumber(),
+                books.getSize(),
+                books.getTotalElements(),
+                books.getTotalPages(),
+                books.isFirst(),
+                books.isLast());
+    }
+
     @Override
     public PageResponse<BookResponse> findAllBooks(int pageNumber, int pageSize, Authentication connectedUser) {
         User user = (User) connectedUser.getPrincipal();

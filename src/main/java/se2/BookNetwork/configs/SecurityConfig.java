@@ -24,7 +24,7 @@ public class SecurityConfig {
                                 "/login",
                                 "/register",
                                 "/logout",
-                                "/books",
+                                "/books/**",
                                 "/resources/**",
                                 "/static/**",
                                 "/css/**",
@@ -36,7 +36,7 @@ public class SecurityConfig {
                 .formLogin(form -> form
                         .loginPage("/login")
                         .loginProcessingUrl("/login")
-                        .defaultSuccessUrl("/users/profile", true)
+                        .defaultSuccessUrl("/books", true)
                         .permitAll())
                 .logout(logout -> logout
                         .logoutUrl("/logout")

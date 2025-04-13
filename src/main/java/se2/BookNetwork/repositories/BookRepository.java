@@ -9,7 +9,15 @@ import org.springframework.data.repository.query.Param;
 
 import se2.BookNetwork.models.common.Book;
 
-public interface BookRepository extends JpaRepository<Book, Integer>,  JpaSpecificationExecutor<Book> {
+public interface BookRepository extends JpaRepository<Book, Integer>, JpaSpecificationExecutor<Book> {
+    @Query("""
+            SELECT book
+            FROM Book book
+            WHERE book.archived = false
+            AND book.shareable = true
+            """)
+    Page<Book> findAllDisplayableBooksForHomePage(Pageable pageable);
+
     @Query("""
             SELECT book
             FROM Book book
@@ -17,5 +25,5 @@ public interface BookRepository extends JpaRepository<Book, Integer>,  JpaSpecif
             AND book.shareable = true
             AND book.owner.id != :userId
             """)
-    Page<Book> findAllDisplayableBooks(Pageable pageable,@Param("userId") Integer userId);
+    Page<Book> findAllDisplayableBooks(Pageable pageable, @Param("userId") Integer userId);
 }

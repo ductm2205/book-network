@@ -18,7 +18,7 @@
                 <div th:each="book : ${books}" class="col">
                     <div th:replace="~{fragments/book-card :: bookCard(
                         ${book}, 
-                        ${book.ownerName == currentUser.fullName}, 
+                        ${book.ownerName == currentUser?.fullName}, 
                         @{'/books/' + ${book.id} + '/share'}, 
                         @{'/books/' + ${book.id} + '/archive'}, 
                         @{'/books/' + ${book.id} + '/favourite/add'}, 
