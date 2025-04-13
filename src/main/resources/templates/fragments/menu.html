@@ -58,7 +58,7 @@
                     </button>
                     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdown-profile-menu">
                         <li>
-                            <a class="dropdown-item" href="#"
+                            <a class="dropdown-item" th:href="@{/users/profile}"
                                 th:text="${currentUser != null ? currentUser.fullName : 'Profile'}">
                                 Profile
                             </a>
