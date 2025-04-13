@@ -19,6 +19,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import se2.BookNetwork.core.PageResponse;
+import se2.BookNetwork.core.constants.PaginateConstants;
 import se2.BookNetwork.core.requests.BookRequest;
 import se2.BookNetwork.core.responses.BookResponse;
 import se2.BookNetwork.core.responses.BorrowedBookResponse;
@@ -40,12 +41,10 @@ public class BookController {
     private final IFavouriteBookService favouriteBookService;
     private final IFavouriteService favouriteService;
 
-    private static final String DEFAULT_PAGE_SIZE = "8";
-
     @GetMapping()
     public String getAllBooks(
             @RequestParam(name = "pageNumber", defaultValue = "0", required = false) int pageNumber,
-            @RequestParam(name = "pageSize", defaultValue = DEFAULT_PAGE_SIZE, required = false) int pageSize,
+            @RequestParam(name = "pageSize", defaultValue = PaginateConstants.DEFAULT_PAGE_SIZE, required = false) int pageSize,
             Authentication connectedUser,
             Model model) {
 
@@ -69,7 +68,7 @@ public class BookController {
             Model model,
             Authentication currentUser,
             @RequestParam(name = "pageNumber", defaultValue = "0", required = false) int pageNumber,
-            @RequestParam(name = "pageSize", defaultValue = DEFAULT_PAGE_SIZE, required = false) int pageSize) {
+            @RequestParam(name = "pageSize", defaultValue = PaginateConstants.DEFAULT_PAGE_SIZE, required = false) int pageSize) {
         BookResponse book = bookService.getBookById(id);
         model.addAttribute("book", book);
 
@@ -86,7 +85,7 @@ public class BookController {
     @GetMapping("/my-books")
     public String getMyBooks(
             @RequestParam(defaultValue = "0") int pageNumber,
-            @RequestParam(defaultValue = DEFAULT_PAGE_SIZE) int pageSize,
+            @RequestParam(defaultValue = PaginateConstants.DEFAULT_PAGE_SIZE) int pageSize,
             Authentication authentication,
             Model model) {
         PageResponse<BookResponse> pageResponse = bookService.findAllBooksOwnedByUser(pageNumber, pageSize,
@@ -106,7 +105,7 @@ public class BookController {
     @GetMapping("/my-borrowed-books")
     public String getBorrowedBooks(
             @RequestParam(defaultValue = "0") int pageNumber,
-            @RequestParam(defaultValue = DEFAULT_PAGE_SIZE) int pageSize,
+            @RequestParam(defaultValue = PaginateConstants.DEFAULT_PAGE_SIZE) int pageSize,
             Model model,
             Authentication authentication) {
 
@@ -127,7 +126,7 @@ public class BookController {
 
     @GetMapping("/my-returned-books")
     public String getReturnedBooks(@RequestParam(defaultValue = "0") int pageNumber,
-            @RequestParam(defaultValue = DEFAULT_PAGE_SIZE) int pageSize,
+            @RequestParam(defaultValue = PaginateConstants.DEFAULT_PAGE_SIZE) int pageSize,
             Model model,
             Authentication authentication) {
 
@@ -341,7 +340,7 @@ public class BookController {
     @GetMapping("/favourites")
     public String getAllFavouriteBooks(
             @RequestParam(defaultValue = "0") int pageNumber,
-            @RequestParam(defaultValue = DEFAULT_PAGE_SIZE) int pageSize,
+            @RequestParam(defaultValue = PaginateConstants.DEFAULT_PAGE_SIZE) int pageSize,
             Authentication authentication,
             RedirectAttributes redirectAttributes,
             HttpServletRequest request,
