@@ -11,8 +11,10 @@ import org.springframework.stereotype.Component;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import se2.BookNetwork.core.constants.Roles;
+import se2.BookNetwork.models.common.Favourite;
 import se2.BookNetwork.models.common.Role;
 import se2.BookNetwork.models.common.User;
+import se2.BookNetwork.repositories.FavouriteRepository;
 import se2.BookNetwork.repositories.RoleRepository;
 import se2.BookNetwork.repositories.UserRepository;
 
@@ -22,6 +24,7 @@ public class DataInitializer {
 
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
+    private final FavouriteRepository favouriteRepository;
     private final PasswordEncoder passwordEncoder;
 
     @Bean
@@ -50,6 +53,14 @@ public class DataInitializer {
                         .roles(List.of(adminRole))
                         .build();
                 userRepository.save(admin);
+
+                var favourite = Favourite
+                        .builder()
+                        .owner(admin)
+                        .createdBy(admin.getEmail())
+                        .name(admin.getUsername())
+                        .build();
+                favouriteRepository.save(favourite);
             }
         };
     }

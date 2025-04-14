@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <title>Manage User</title>
+    <link rel="stylesheet" href="/css/styles.css" />
+</head>
+
+<body>
+    <h1>Manage User: <span th:text="${user.fullName}"></span></h1>
+    <p th:if="${successMessage}" th:text="${successMessage}" style="color: green;"></p>
+    <p th:if="${errorMessage}" th:text="${errorMessage}" style="color: red;"></p>
+    <form th:action="@{/users/{id}/manage(id=${user.id})}" method="post">
+        <div>
+            <label>Account Locked:</label>
+            <input type="checkbox" name="lock" th:checked="${user.isAccountLocked}" />
+        </div>
+        <div>
+            <label>Account Enabled:</label>
+            <input type="checkbox" name="enable" th:checked="${user.isEnabled}" />
+        </div>
+        <div>
+            <label for="assignRole">Assign Role:</label>
+            <select id="assignRole" name="assignRole">
+                <option value="">Select Role</option>
+                <option value="USER">USER</option>
+                <option value="ADMIN">ADMIN</option>
+            </select>
+        </div>
+        <div>
+            <label for="removeRole">Remove Role:</label>
+            <select id="removeRole" name="removeRole">
+                <option value="">Select Role</option>
+                <option value="USER">USER</option>
+                <option value="ADMIN">ADMIN</option>
+            </select>
+        </div>
+        <button type="submit">Update User</button>
+    </form>
+    <p><a th:href="@{/users/list}">Back to User List</a></p>
+</body>
+
+</html>

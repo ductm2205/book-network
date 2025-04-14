@@ -141,7 +141,7 @@ public class UserService implements IUserService {
 
     @Override
     public PageResponse<User> getAllUsers(int pageNumber, int pageSize) {
-        Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by("firstName").ascending());
+        Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by("firstname").ascending());
         var users = userRepository.getPaginatedUsersList(pageable);
         var usersResponse = users.stream().toList();
         return new PageResponse<User>(

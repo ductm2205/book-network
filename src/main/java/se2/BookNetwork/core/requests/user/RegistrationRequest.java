@@ -1,5 +1,7 @@
 package se2.BookNetwork.core.requests.user;
 
+import java.time.LocalDate;
+
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
@@ -36,4 +38,6 @@ public class RegistrationRequest {
     @NotEmpty(message = "Confirm password is required")
     @NotBlank(message = "Confirm password is required")
     private String confirmPassword;
+
+    private LocalDate dateOfBirth;
 }

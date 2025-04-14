@@ -16,7 +16,6 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import se2.BookNetwork.core.PageResponse;
-import se2.BookNetwork.core.constants.PaginateConstants;
 import se2.BookNetwork.core.requests.user.ChangePasswordRequest;
 import se2.BookNetwork.core.requests.user.RegistrationRequest;
 import se2.BookNetwork.core.requests.user.UpdateProfileRequest;
@@ -32,20 +31,24 @@ public class UserController {
     private final IUserService userService;
 
     // Show registration form
-    @GetMapping("/register")
-    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping("/add")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public String showRegistrationForm(Model model) {
-        model.addAttribute("registrationRequest", new RegistrationRequest());
+        model.addAttribute("userForm", new RegistrationRequest());
         return "users/register";
     }
 
     // Handle registration
     @PostMapping("/register")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public String registerUser(
             @Valid @ModelAttribute("userForm") RegistrationRequest request,
             BindingResult result,
             RedirectAttributes redirectAttributes) {
+        // Check if passwords match
+        if (!request.getPassword().equals(request.getConfirmPassword())) {
+            result.rejectValue("confirmPassword", "error.user", "Passwords do not match");
+        }
         if (result.hasErrors()) {
             return "users/register";
         }
@@ -53,7 +56,7 @@ public class UserController {
         try {
             userService.registerUser(request);
             redirectAttributes.addFlashAttribute("successMessage", "Registration successful! Please log in.");
-            return "redirect:/login";
+            return "users/list";
         } catch (IllegalArgumentException e) {
             result.rejectValue("email", "error.user", e.getMessage());
             return "users/register";
@@ -62,7 +65,6 @@ public class UserController {
 
     // Show user profile
     @GetMapping("/profile")
-    @PreAuthorize("hasRole('USER')")
     public String showProfile(@AuthenticationPrincipal User user, Model model) {
         var profile = UpdateProfileRequest.builder()
                 .id(user.getId())
@@ -78,7 +80,6 @@ public class UserController {
 
     // Update user profile
     @PostMapping("/profile")
-    @PreAuthorize("hasRole('USER')")
     public String updateProfile(
             @AuthenticationPrincipal User user,
             @Valid @ModelAttribute("profile") UpdateProfileRequest profile,
@@ -105,7 +106,6 @@ public class UserController {
 
     // Show change password form
     @GetMapping("/change-password")
-    @PreAuthorize("hasRole('USER')")
     public String showChangePasswordForm(Model model) {
         model.addAttribute("passwordForm", new ChangePasswordRequest());
         model.addAttribute("title", "Change Password");
@@ -114,7 +114,6 @@ public class UserController {
 
     // Handle password change
     @PostMapping("/change-password")
-    @PreAuthorize("hasRole('USER')")
     public String changePassword(
             @AuthenticationPrincipal User user,
             @Valid @ModelAttribute("passwordForm") ChangePasswordRequest request,
@@ -140,19 +139,24 @@ public class UserController {
     }
 
     @GetMapping("/list")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public String listUsers(
             @RequestParam(name = "pageNumber", defaultValue = "0", required = false) int pageNumber,
-            @RequestParam(name = "pageSize", defaultValue = PaginateConstants.DEFAULT_PAGE_SIZE, required = false) int pageSize,
+            @RequestParam(name = "pageSize", defaultValue = "10", required = false) int pageSize,
             Model model) {
         PageResponse<User> users = userService.getAllUsers(pageNumber, pageSize);
-        model.addAttribute("users", users);
+        model.addAttribute("users", users.getElements());
+        model.addAttribute("currentPage", users.getPageNumber());
+        model.addAttribute("totalPages", users.getTotalPages());
+        model.addAttribute("totalItems", users.getTotalElements());
+        model.addAttribute("pageSize", pageSize);
+        model.addAttribute("title", "Users List");
         return "users/list";
     }
 
     // Show user management form (admin only)
     @GetMapping("/{userId}/manage")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public String showManageUserForm(@PathVariable Integer userId, Model model) {
         var user = userService.getUserById(userId);
         model.addAttribute("user", user);
@@ -161,7 +165,7 @@ public class UserController {
 
     // Handle user management (admin only)
     @PostMapping("/{userId}/manage")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public String manageUser(
             @PathVariable Integer userId,
             UserUpdateRequest request,

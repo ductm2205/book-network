@@ -80,6 +80,48 @@
                 </form>
             </div>
         </div>
+
+        <!-- Feedbacks Section -->
+        <div class="">
+            <p th:text="${error}"></p>
+            <h3>Feedbacks</h3>
+            <div class="d-flex flex-column justify-content-end">
+                <div th:if="${feedbacks != null}" th:each="feedback : ${feedbacks.elements}"
+                    class="mb-3 p-3 border rounded">
+                    <div class="d-flex justify-content-between gap-2 mb-2">
+                        <!-- Star Rating for Feedback -->
+                        <div class="d-flex gap-2">
+                            <div th:replace="~{fragments/rating :: rating(${feedback.rate})}"></div>
+                            <span class="fw-bold" th:if="${feedback.rate > 0}" th:text="${feedback.rate}">Rating</span>
+                            <div class="feedback-owner">
+                                <p th:text="${feedback.owner}"></p>
+                            </div>
+                        </div>
+                        <div th:if="${currentUser.username == feedback.owner}" class="action d-flex gap-3">
+                            <a th:href="@{'/feedbacks/' + ${feedback.id} + '/edit'}">
+                                <i class="fa fa-edit"></i>
+                            </a>
+                            <a th:href="@{'/feedbacks/' + ${feedback.id} + '/delete'}">
+                                <i class="fa fa-trash text-danger"></i>
+                            </a>
+                        </div>
+                    </div>
+                    <p th:text="${feedback.comment}">Feedback comment goes here...</p>
+                </div>
+
+                <div th:if="${feedbacks == null or #lists.isEmpty(feedbacks)}" class="alert alert-info">
+                    No feedbacks available for this book yet.
+                </div>
+            </div>
+
+            <!-- Pagination -->
+            <div th:if="${totalPages > 1}">
+                <div
+                    th:replace="~{fragments/pagination :: pagination(${pageNumber}, ${pageSize}, ${totalPages}, ${pageNumber}, @{/books/{id}(id=${book.id})})}">
+                </div>
+            </div>
+        </div>
+
         <!-- Script for image preview -->
         <script>
             function previewImage(input) {

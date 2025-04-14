@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <title>Register</title>
+</head>
+
+<body>
+    <h1>Register</h1>
+    <form th:action="@{/users/register}" th:object="${userForm}" method="post">
+        <div>
+            <label for="firstname">First Name:</label>
+            <input type="text" id="firstname" th:field="*{firstname}" required />
+            <span th:errors="*{firstname}" style="color: red;"></span>
+        </div>
+        <div>
+            <label for="lastname">Last Name:</label>
+            <input type="text" id="lastname" th:field="*{lastname}" required />
+            <span th:errors="*{lastname}" style="color: red;"></span>
+        </div>
+        <div>
+            <label for="email">Email:</label>
+            <input type="email" id="email" th:field="*{email}" required />
+            <span th:errors="*{email}" style="color: red;"></span>
+        </div>
+        <div>
+            <label for="password">Password:</label>
+            <input type="password" id="password" th:field="*{password}" required />
+            <span th:errors="*{password}" style="color: red;"></span>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Confirm Password</label>
+            <input class="form-control" type="password" th:field="*{confirmPassword}" required />
+            <span th:errors="*{confirmPassword}" style="color: red;"></span>
+        </div>
+        <div>
+            <label for="dateOfBirth">Date of Birth:</label>
+            <input type="date" id="dateOfBirth" th:field="*{dateOfBirth}" required />
+            <span th:errors="*{dateOfBirth}" style="color: red;"></span>
+        </div>
+        <button class="btn btn-primary" type="submit">Register</button>
+    </form>
+    <p><a th:href="@{/login}">Already have an account? Log in</a></p>
+</body>
+
+</html>

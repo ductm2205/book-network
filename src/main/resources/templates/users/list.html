@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+    layout:decorate="~{layout}" lang="en">
+
+<body>
+    <div layout:fragment="content" class="container-fluid py-4">
+        <div class="card shadow-sm border-0">
+            <div class="card-header bg-white d-flex justify-content-between align-items-center py-3">
+                <h3 class="card-title mb-0">
+                    <i class="fas fa-users me-2 text-primary"></i>Users List
+                </h3>
+                <div class="d-flex align-items-center gap-3">
+                    <form class="d-flex" th:action="@{/users/search}" method="GET">
+                        <div class="input-group">
+                            <input class="form-control border-end-0" type="search" name="query"
+                                placeholder="Search users..." aria-label="Search">
+                            <button title="search" class="btn btn-outline-primary border-start-0" type="submit">
+                                <i class="fas fa-search"></i>
+                            </button>
+                        </div>
+                    </form>
+                    <a th:href="@{/users/add}" class="btn btn-primary">
+                        <i class="fas fa-user-plus me-1"></i> New User
+                    </a>
+                </div>
+            </div>
+
+            <div class="card-body p-0">
+                <div th:if="${users != null}" class="table-responsive">
+                    <table class="table table-hover table-striped mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th scope="col" class="ps-3">#</th>
+                                <th scope="col">Full Name</th>
+                                <th scope="col">Email</th>
+                                <th scope="col">Roles</th>
+                                <th scope="col">Created At</th>
+                                <th scope="col" class="text-center"><i class="fas fa-cogs"></i> Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="user, stat : ${users}">
+                                <th scope="row" class="ps-3" th:text="${stat.index + 1}">1</th>
+                                <td>
+                                    <span class="fw-medium" th:text="${user.getFullName()}">Full Name</span>
+                                </td>
+                                <td th:text="${user.email}">Email</td>
+                                <td>
+                                    <span class="badge bg-info text-dark" th:each="role : ${user.getAuthorities()}"
+                                        th:text="${role}">Role</span>
+                                </td>
+                                <td>
+                                    <span th:text="${#temporals.format(user.createdAt, 'dd-MMM-yyyy')}">createdAt</span>
+                                </td>
+                                <td class="text-center">
+                                    <a th:href="@{/users/{id}/manage(id=${user.id})}"
+                                        class="btn btn-sm btn-outline-primary">
+                                        <i class="fa-solid fa-user-gear"></i> Manage
+                                    </a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div th:if="${users == null || #lists.isEmpty(users)}" class="text-center p-5">
+                    <div class="text-muted">
+                        <i class="fas fa-users fa-3x mb-3 text-secondary opacity-50"></i>
+                        <p class="h5">No users found</p>
+                        <p>Try different search criteria or add new users.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-footer bg-light">
+                <!-- Pagination -->
+                <th:block
+                    th:replace="~{fragments/pagination :: pagination(${currentPage}, ${pageSize}, ${totalPages}, ${currentPage}, @{/users})}">
+                </th:block>
+            </div>
+        </div>
+    </div>
+
+</body>
+
+</html>
