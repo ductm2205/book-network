@@ -35,6 +35,7 @@ public class UserController {
     @PreAuthorize("hasAuthority('ADMIN')")
     public String showRegistrationForm(Model model) {
         model.addAttribute("userForm", new RegistrationRequest());
+        model.addAttribute("title", "Create user");
         return "users/register";
     }
 
@@ -44,21 +45,24 @@ public class UserController {
     public String registerUser(
             @Valid @ModelAttribute("userForm") RegistrationRequest request,
             BindingResult result,
+            Model model,
             RedirectAttributes redirectAttributes) {
         // Check if passwords match
         if (!request.getPassword().equals(request.getConfirmPassword())) {
             result.rejectValue("confirmPassword", "error.user", "Passwords do not match");
         }
         if (result.hasErrors()) {
+            model.addAttribute("title", "Create user");
             return "users/register";
         }
 
         try {
             userService.registerUser(request);
             redirectAttributes.addFlashAttribute("successMessage", "Registration successful! Please log in.");
-            return "users/list";
+            return "redirect:/users/list";
         } catch (IllegalArgumentException e) {
             result.rejectValue("email", "error.user", e.getMessage());
+            model.addAttribute("title", "Create user");
             return "users/register";
         }
     }
@@ -159,6 +163,7 @@ public class UserController {
     @PreAuthorize("hasAuthority('ADMIN')")
     public String showManageUserForm(@PathVariable Integer userId, Model model) {
         var user = userService.getUserById(userId);
+        model.addAttribute("title", "Manage User");
         model.addAttribute("user", user);
         return "users/manage";
     }
@@ -172,7 +177,9 @@ public class UserController {
             RedirectAttributes redirectAttributes) {
         try {
             userService.setAccountLocked(userId, request.isLock());
-            userService.setAccountEnabled(userId, request.isEnable());
+            if (!request.isLock()) {
+                userService.setAccountEnabled(userId, request.isEnable());
+            }
             var assignRole = request.getAssignRole();
             if (assignRole != null && !assignRole.isEmpty()) {
                 userService.assignRoleToUser(userId, assignRole);
@@ -186,5 +193,14 @@ public class UserController {
             redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
         }
         return "redirect:/users/" + userId + "/manage";
+    }
+
+    @PostMapping("/{userId}/delete")
+    public String deleteUser(
+            @PathVariable Integer userId,
+            RedirectAttributes redirectAttributes) {
+        userService.deleteUser(userId);
+        redirectAttributes.addFlashAttribute("successMessage", "User deleted successfully.");
+        return "redirect:/users/list";
     }
 }

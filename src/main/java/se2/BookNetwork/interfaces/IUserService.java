@@ -1,6 +1,5 @@
 package se2.BookNetwork.interfaces;
 
-
 import se2.BookNetwork.core.PageResponse;
 import se2.BookNetwork.core.requests.user.ChangePasswordRequest;
 import se2.BookNetwork.core.requests.user.RegistrationRequest;
@@ -11,6 +10,8 @@ public interface IUserService {
     User registerUser(RegistrationRequest request);
 
     User updateUserProfile(UpdateProfileRequest request);
+
+    void deleteUser(Integer userId);
 
     void changePassword(Integer userId, ChangePasswordRequest request);
 

@@ -15,6 +15,7 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     @Query("""
             SELECT user
             FROM User user
+            WHERE user.deletedAt IS null
             """)
     Page<User> getPaginatedUsersList(Pageable pageable);
 }

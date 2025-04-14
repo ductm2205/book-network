@@ -9,10 +9,10 @@
 <body>
     <div layout:fragment="content">
         <div class="container-fluid d-flex justify-content-center align-items-center min-vh-100">
-            <div class="card container-fluid shadow">
-                <div class="card-body container-fluid">
+            <div class="card w-75 shadow">
+                <div class="card-body">
                     <h3 class="card-title text-center">Register</h3>
-                    <hr class="my-4">
+                    <hr class="my-3">
 
                     <!-- Alert for error messages -->
                     <div th:if="${error}" th:text="${error}" style="color: red;"></div>
@@ -33,18 +33,50 @@
                             <span th:errors="*{email}" style="color: red;"></span>
                         </div>
                         <div class="mb-3">
-                            <label class="form-label">Password</label>
-                            <input class="form-control" type="password" th:field="*{password}" required />
-                            <span th:errors="*{password}" style="color: red;"></span>
+                            <label class="form-label">Date of Birth</label>
+                            <input class="form-control" type="date" th:field="*{dateOfBirth}" required />
+                            <span th:errors="*{dateOfBirth}" style="color: red;"></span>
                         </div>
                         <div class="mb-3">
-                            <label class="form-label">Confirm Password</label>
-                            <input class="form-control" type="password" th:field="*{confirmPassword}" required />
-                            <span th:errors="*{confirmPassword}" style="color: red;"></span>
+                            <label for="password" class="form-label fw-medium">Password</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light">
+                                    <i class="fas fa-key text-primary"></i>
+                                </span>
+                                <input type="password" class="form-control" id="password" th:field="*{password}"
+                                    required />
+                                <button class="btn btn-outline-secondary toggle-password" type="button"
+                                    data-target="password">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>
+                            <div class="text-danger small mt-2" th:if="${#fields.hasErrors('password')}"
+                                th:errors="*{password}"></div>
                         </div>
-                        <div class="action">
+                        <div class="mb-3">
+                            <label for="confirmPassword" class="form-label fw-medium">Confirm New Password</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light">
+                                    <i class="fas fa-check-circle text-primary"></i>
+                                </span>
+                                <input type="password" class="form-control" id="confirmPassword"
+                                    th:field="*{confirmPassword}" required autocomplete="new-password" />
+                                <button class="btn btn-outline-secondary toggle-password" type="button"
+                                    data-target="confirmPassword">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>
+                            <div class="text-danger small mt-2" th:if="${#fields.hasErrors('confirmPassword')}"
+                                th:errors="*{confirmPassword}"></div>
+                        </div>
+                        <div class="action d-flex justify-content-between">
+                            <a th:href="@{/login}">
+                                <button class="btn btn-outline-danger" type="button" value="Cancel" title="Cancel">
+                                    <i class="fa-solid fa-xmark"></i>&nbsp; Cancel
+                                </button>
+                            </a>
                             <button class="btn btn-primary" type="submit" value="Register" title="Register"><i
-                                    class="fas fa-sign-in-alt"></i>&nbsp;Sign in
+                                    class="fas fa-sign-in-alt"></i>&nbsp; Register
                             </button>
                         </div>
                     </form>
@@ -52,6 +84,42 @@
                 </div>
             </div>
         </div>
+        <!-- Script for toggle password visibility -->
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                // Password visibility toggle
+                const toggleButtons = document.querySelectorAll('.toggle-password');
+                toggleButtons.forEach(button => {
+                    button.addEventListener('click', function () {
+                        const targetId = this.getAttribute('data-target');
+                        const passwordInput = document.getElementById(targetId);
+                        const icon = this.querySelector('i');
+
+                        if (passwordInput.type === 'password') {
+                            passwordInput.type = 'text';
+                            icon.classList.remove('fa-eye');
+                            icon.classList.add('fa-eye-slash');
+                        } else {
+                            passwordInput.type = 'password';
+                            icon.classList.remove('fa-eye-slash');
+                            icon.classList.add('fa-eye');
+                        }
+                    });
+                });
+
+                // Bootstrap validation script
+                const forms = document.querySelectorAll('.needs-validation');
+                Array.prototype.slice.call(forms).forEach(function (form) {
+                    form.addEventListener('submit', function (event) {
+                        if (!form.checkValidity()) {
+                            event.preventDefault();
+                            event.stopPropagation();
+                        }
+                        form.classList.add('was-validated');
+                    }, false);
+                });
+            });
+        </script>
     </div>
 </body>
 

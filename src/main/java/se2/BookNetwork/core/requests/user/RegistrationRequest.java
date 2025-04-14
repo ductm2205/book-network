@@ -40,4 +40,7 @@ public class RegistrationRequest {
     private String confirmPassword;
 
     private LocalDate dateOfBirth;
+
+    private String role;
+    private boolean enabled;
 }

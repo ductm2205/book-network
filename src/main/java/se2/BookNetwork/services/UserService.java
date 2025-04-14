@@ -1,5 +1,6 @@
 package se2.BookNetwork.services;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.data.domain.PageRequest;
@@ -12,7 +13,6 @@ import org.springframework.transaction.annotation.Transactional;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import se2.BookNetwork.core.PageResponse;
-import se2.BookNetwork.core.constants.Roles;
 import se2.BookNetwork.core.requests.user.ChangePasswordRequest;
 import se2.BookNetwork.core.requests.user.RegistrationRequest;
 import se2.BookNetwork.core.requests.user.UpdateProfileRequest;
@@ -38,7 +38,7 @@ public class UserService implements IUserService {
             throw new IllegalArgumentException("Email already exists!");
         }
 
-        var role = roleRepository.findByName(Roles.USER)
+        var role = roleRepository.findByName(request.getRole())
                 .orElseThrow(() -> new EntityNotFoundException("Role not found!"));
 
         User user = User.builder()
@@ -46,8 +46,9 @@ public class UserService implements IUserService {
                 .lastname(request.getLastname())
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
-                .isEnabled(true)
+                .isEnabled(request.isEnabled())
                 .isAccountLocked(false)
+                .dateOfBirth(request.getDateOfBirth())
                 .roles(List.of(role))
                 .build();
 
@@ -117,6 +118,9 @@ public class UserService implements IUserService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
         user.setAccountLocked(lock);
+        if (lock) {
+            user.setEnabled(false);
+        }
         userRepository.save(user);
     }
 
@@ -152,6 +156,15 @@ public class UserService implements IUserService {
                 users.getTotalPages(),
                 users.isFirst(),
                 users.isLast());
+    }
+
+    @Override
+    @Transactional
+    public void deleteUser(Integer userId) {
+        var user = userRepository.findById(userId).orElseThrow(() -> new EntityNotFoundException("User not found!"));
+        user.setAccountLocked(true);
+        user.setDeletedAt(LocalDateTime.now());
+        userRepository.save(user);
     }
 
 }
