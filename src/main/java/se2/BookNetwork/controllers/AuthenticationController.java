@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -18,21 +19,28 @@ import se2.BookNetwork.services.AuthenticationService;
 @RequiredArgsConstructor
 public class AuthenticationController {
 
-    private static final String ERROR = "error";
     private static final String REGISTER_PATH = "auth/register";
 
     private final AuthenticationService authenticationService;
 
     @GetMapping("/login")
-    public String loginPage(Model model) {
+    public String loginPage(@RequestParam(value = "error", required = false) String error,
+            @RequestParam(value = "logout", required = false) String logout,
+            Model model) {
         model.addAttribute("title", "Login");
+        if (error != null) {
+            model.addAttribute("errorMessage", "Invalid username or password");
+        }
+        if (logout != null) {
+            model.addAttribute("logoutMessage", "You have been logged out successfully");
+        }
         return "auth/login";
     }
 
     // @PostMapping("/login")
     // public String authenticateUser(Model model) {
-    //     model.addAttribute("title", "Login");
-    //     return "login";
+    // model.addAttribute("title", "Login");
+    // return "login";
     // }
 
     @GetMapping("/register")
@@ -45,16 +53,18 @@ public class AuthenticationController {
     @PostMapping("/register")
     public String registerUser(
             @ModelAttribute("registerRequest") @Valid RegistrationRequest registrationRequest,
-            BindingResult bindingResult,
+            BindingResult result,
             Model model) {
-        if (bindingResult.hasErrors()) {
+        if (result.hasErrors()) {
+            model.addAttribute("title", "Register");
             return REGISTER_PATH;
         }
 
         try {
             // Check if passwords match
             if (!registrationRequest.getPassword().equals(registrationRequest.getConfirmPassword())) {
-                model.addAttribute(ERROR, "Passwords do not match");
+                result.rejectValue("confirmPassword", "error.user", "Passwords do not match");
+                model.addAttribute("title", "Register");
                 return REGISTER_PATH;
             }
 
@@ -63,7 +73,8 @@ public class AuthenticationController {
             return "redirect:/login?registered";
 
         } catch (IllegalArgumentException e) {
-            model.addAttribute(ERROR, e.getMessage());
+            result.rejectValue("email", "error.user", e.getMessage());
+            model.addAttribute("title", "Register");
             return REGISTER_PATH;
         }
     }

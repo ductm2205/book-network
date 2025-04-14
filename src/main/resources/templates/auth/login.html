@@ -14,6 +14,17 @@
                 <div class="card-body">
                     <h3 class="card-title text-center">Login</h3>
                     <hr class="my-4">
+                    <!-- Error Alert -->
+                    <div class="alert alert-danger" th:if="${errorMessage}">
+                        <i class="fas fa-exclamation-circle me-2"></i>
+                        <span th:text="${errorMessage}"></span>
+                    </div>
+
+                    <!-- Logout Success Alert -->
+                    <div class="alert alert-success" th:if="${logoutMessage}">
+                        <i class="fas fa-check-circle me-2"></i>
+                        <span th:text="${logoutMessage}"></span>
+                    </div>
 
                     <!-- Login Form -->
                     <form th:action="@{/login}" method="post">
