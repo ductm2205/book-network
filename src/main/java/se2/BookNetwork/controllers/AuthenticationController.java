@@ -26,6 +26,7 @@ public class AuthenticationController {
     @GetMapping("/login")
     public String loginPage(@RequestParam(value = "error", required = false) String error,
             @RequestParam(value = "logout", required = false) String logout,
+            @RequestParam(value = "registered", required = false) String registered,
             Model model) {
         model.addAttribute("title", "Login");
         if (error != null) {
@@ -33,6 +34,9 @@ public class AuthenticationController {
         }
         if (logout != null) {
             model.addAttribute("logoutMessage", "You have been logged out successfully");
+        }
+        if (registered != null) {
+            model.addAttribute("registeredMessage", "You have registered successfully, please log in!");
         }
         return "auth/login";
     }

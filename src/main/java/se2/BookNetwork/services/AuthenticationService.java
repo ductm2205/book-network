@@ -40,6 +40,7 @@ public class AuthenticationService implements IAuthenticationService {
                 .roles(List.of(roles))
                 .isAccountLocked(false)
                 .isEnabled(true)
+                .dateOfBirth(registrationRequest.getDateOfBirth())
                 .build();
 
         userRepository.save(user);
