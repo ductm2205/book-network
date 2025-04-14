@@ -154,6 +154,7 @@ public class BookController {
     public String showAddForm(Model model) {
         model.addAttribute("bookRequest", new BookRequest(null, "", "", "", "", false));
         model.addAttribute("title", "Add New Book");
+        model.addAttribute("feedbacks", null);
         model.addAttribute("activeTab", "books");
         return "book/manage-book";
     }

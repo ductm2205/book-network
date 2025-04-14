@@ -7,7 +7,7 @@
 </head>
 
 <body>
-    <div layout:fragment="content">
+    <div layout:fragment="content" class="container-fluid py-4">
         <!-- Toast Container -->
         <div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 11">
             <div id="messageToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
@@ -82,7 +82,7 @@
         </div>
 
         <!-- Feedbacks Section -->
-        <div class="">
+        <div th:if="${feedbacks != null}" class="">
             <p th:text="${error}"></p>
             <h3>Feedbacks</h3>
             <div class="d-flex flex-column justify-content-end">
