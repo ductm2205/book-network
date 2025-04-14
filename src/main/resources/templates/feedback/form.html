@@ -54,11 +54,8 @@
                         th:text="${feedback != null ? feedback.comment : ''}"></textarea>
                 </div>
                 <div class="d-flex justify-content-end gap-2 col-12">
-                    <button type="submit" name="action" value="returnWithFeedback" class="btn btn-outline-primary">
-                        <i class="fas fa-save"></i>&nbsp;Rate the book & Return
-                    </button>
                     <button type="submit" name="action" value="returnOnly" class="btn btn-outline-success">
-                        <i class="fa-solid fa-paper-plane"></i>&nbsp;Just Return
+                        <i class="fa-solid fa-paper-plane"></i>&nbsp;Return
                     </button>
                     <a href="javascript:void(0)" th:onclick="'javascript:history.back();'"
                         class="btn btn-link btn text-danger">

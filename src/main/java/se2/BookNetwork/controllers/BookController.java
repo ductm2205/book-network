@@ -72,7 +72,8 @@ public class BookController {
             Model model,
             Authentication currentUser,
             @RequestParam(name = "pageNumber", defaultValue = "0", required = false) int pageNumber,
-            @RequestParam(name = "pageSize", defaultValue = PaginateConstants.DEFAULT_PAGE_SIZE, required = false) int pageSize) {
+            @RequestParam(name = "pageSize", defaultValue = PaginateConstants.DEFAULT_PAGE_SIZE, required = false) int pageSize,
+            RedirectAttributes redirectAttributes) {
         BookResponse book = bookService.getBookById(id);
         model.addAttribute("book", book);
 
@@ -193,13 +194,18 @@ public class BookController {
             }
         }
 
-        redirectAttributes.addFlashAttribute("message", "Book saved successfully with ID: " + savedBookId);
+        redirectAttributes.addFlashAttribute("message", "Book saved successfully!");
         redirectAttributes.addFlashAttribute("level", "success");
         return "redirect:/books/my-books";
     }
 
     @GetMapping("/{bookId}/manage")
-    public String editBookPage(@PathVariable("bookId") Integer bookId, Model model) {
+    public String editBookPage(
+            @PathVariable("bookId") Integer bookId,
+            Model model,
+            Authentication currentUser,
+            @RequestParam(defaultValue = "0") int pageNumber,
+            @RequestParam(defaultValue = PaginateConstants.DEFAULT_PAGE_SIZE) int pageSize) {
         var book = bookService.getBookById(bookId);
         if (book != null) {
             BookRequest bookRequest = new BookRequest(null, "", "", "", "", false);
@@ -209,6 +215,12 @@ public class BookController {
             bookRequest.setIsbn(book.getIsbn());
             bookRequest.setSynopsis(book.getSynopsis());
             bookRequest.setShareable(book.isShareable());
+
+            var feedbacks = this.feedbackService.findAllFeedbackByBookId(bookId, currentUser, pageNumber, pageSize);
+            model.addAttribute("feedbacks", feedbacks);
+            model.addAttribute("pageNumber", pageNumber);
+            model.addAttribute("pageSize", pageSize);
+            model.addAttribute("totalPages", feedbacks.getTotalPages());
 
             model.addAttribute("title", "Edit Book");
             model.addAttribute("activeTab", "books");

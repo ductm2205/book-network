@@ -20,6 +20,7 @@ public class FeedbackResponse {
     private String comment;
 
     private String owner;
+
     private Integer bookId;
 
     private boolean isOwnFeedback;
