@@ -137,3 +137,12 @@
         width: 100%;
     }
 }
+
+.synopsis {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
