@@ -1,6 +1,6 @@
 # Book Social Network 📚
 
- A web application designed for book enthusiasts to connect, share reviews, and manage their reading progress. Built with Spring Boot for the backend and Thymeleaf for server-side rendered frontend views.
+ A web application designed for book enthusiasts to connect, share reviews, and manage their reading list. Built with Spring Boot for the backend and Thymeleaf for server-side rendered frontend views.
 
 This project was developed as part of the SE2 course (Group 02, Tutorial 01).
 
