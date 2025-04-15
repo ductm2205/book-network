@@ -25,7 +25,8 @@ public class FileService implements IFileService {
 
     @Override
     public String saveFile(@NonNull MultipartFile file, @NonNull String userName) {
-        final String fileUploadSubPath = "users" + File.separator + userName; // users/username1/
+        String sanitizedUserName = userName.replaceAll("[^a-zA-Z0-9]", "_");
+        final String fileUploadSubPath = "users" + File.separator + sanitizedUserName;
         return uploadFile(fileUploadSubPath, file);
     }
 

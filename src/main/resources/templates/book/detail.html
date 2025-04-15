@@ -22,8 +22,16 @@
         <div class="head-section d-flex justify-content-between align-items-baseline">
             <h3>Book Details</h3>
             <div class="d-flex gap-2">
+                <a th:href="@{'/books/' + ${book.id} + '/manage'}"
+                    th:if="${book.ownerName == currentUser.getFullName()}">
+                    <button class="btn btn-info" type="button">
+                        <i class="fa fa-edit"></i>
+                        Edit
+                    </button>
+                </a>
                 <form th:action="@{'/books/' + ${book.id} + '/borrow'}" method="get">
-                    <button class="btn btn-outline-primary" type="submit" th:disabled="${!book.available}">
+                    <button class="btn btn-outline-primary" type="submit"
+                        th:disabled="${!book.available || book.ownerName == currentUser.getFullName()}">
                         Borrow
                     </button>
                 </form>
