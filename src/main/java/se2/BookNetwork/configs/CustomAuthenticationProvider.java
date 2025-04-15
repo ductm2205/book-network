@@ -24,14 +24,12 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
         String username = authentication.getName();
         String password = authentication.getCredentials().toString();
 
-        // Load your custom User object
         UserDetails userDetails = userDetailsService.loadUserByUsername(username);
 
         // Verify the password
         if (passwordEncoder.matches(password, userDetails.getPassword())) {
-            // Return an Authentication object with your custom User as the principal
             return new UsernamePasswordAuthenticationToken(
-                    userDetails, // Preserve your custom User object
+                    userDetails,
                     password,
                     userDetails.getAuthorities());
         } else {
