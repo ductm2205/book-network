@@ -90,18 +90,17 @@ public class DataInitializer {
                                                 .build();
                                 userRepository.save(admin);
 
+                                var adminFavourite = Favourite
+                                                .builder()
+                                                .owner(admin)
+                                                .createdBy(admin.getEmail())
+                                                .name(admin.getUsername())
+                                                .createdAt(LocalDateTime.now())
+                                                .build();
+                                favouriteRepository.save(adminFavourite);
                         } else {
                                 admin = userRepository.findByEmail("admin@bsn.com").get();
                         }
-
-                        var adminFavourite = Favourite
-                                        .builder()
-                                        .owner(admin)
-                                        .createdBy(admin.getEmail())
-                                        .name(admin.getUsername())
-                                        .createdAt(LocalDateTime.now())
-                                        .build();
-                        favouriteRepository.save(adminFavourite);
 
                         Faker faker = new Faker();
                         Random random = new Random();
