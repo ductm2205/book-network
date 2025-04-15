@@ -94,6 +94,16 @@ Once the application is running successfully (either via Maven or Docker), open 
 
 *(Note: The port might differ if you changed it in your `.env` file or `application.properties`/`yml` or `docker-compose.yml`)*
 
+#### For development purpose, you can login using:
+
+1. Admin account:
+
+```
+email: admin@bsn.com
+password: admin123
+```
+
+2. Register as a new user
 
 ### Author - GROUP 02 TUTORIAL 01
 
