@@ -32,188 +32,196 @@ import se2.BookNetwork.repositories.UserRepository;
 @RequiredArgsConstructor
 public class DataInitializer {
 
-    private final UserRepository userRepository;
-    private final RoleRepository roleRepository;
-    private final FavouriteRepository favouriteRepository;
-    private final BookRepository bookRepository;
-    private final PasswordEncoder passwordEncoder;
+        private final UserRepository userRepository;
+        private final RoleRepository roleRepository;
+        private final FavouriteRepository favouriteRepository;
+        private final BookRepository bookRepository;
+        private final PasswordEncoder passwordEncoder;
 
-    // Classic books data for realistic seeding
-    private final List<Object[]> classicBooks = Arrays.asList(
-            new Object[] { "To Kill a Mockingbird", "Harper Lee", "978-0446310789",
-                    "Set in the 1930s American South, the story follows young Scout Finch and her father's defense of a Black man accused of rape." },
-            new Object[] { "1984", "George Orwell", "978-0451524935",
-                    "A dystopian novel set in a totalitarian society where critical thought is suppressed under a regime of surveillance and propaganda." },
-            new Object[] { "Pride and Prejudice", "Jane Austen", "978-0141439518",
-                    "The story follows Elizabeth Bennet as she deals with issues of manners, upbringing, morality, and marriage in early 19th-century England." },
-            new Object[] { "The Great Gatsby", "F. Scott Fitzgerald", "978-0743273565",
-                    "Set in the Jazz Age, the novel explores themes of decadence, idealism, resistance to change, and excess." },
-            new Object[] { "Moby-Dick", "Herman Melville", "978-0142437247",
-                    "The narrative tells the adventures of wandering sailor Ishmael and his voyage on the whaling ship Pequod, commanded by Captain Ahab." },
-            new Object[] { "War and Peace", "Leo Tolstoy", "978-0143039990",
-                    "Chronicles the French invasion of Russia and the impact of the Napoleonic era on Tsarist society." },
-            new Object[] { "The Catcher in the Rye", "J.D. Salinger", "978-0316769488",
-                    "The story of Holden Caulfield, a teenage boy dealing with complex issues of identity, belonging, and connection." },
-            new Object[] { "The Hobbit", "J.R.R. Tolkien", "978-0547928227",
-                    "The adventures of hobbit Bilbo Baggins as he journeys to the Lonely Mountain with a spirited group of dwarves." },
-            new Object[] { "Crime and Punishment", "Fyodor Dostoevsky", "978-0143058144",
-                    "The story of the mental anguish and moral dilemmas of Rodion Raskolnikov, an impoverished ex-student in Saint Petersburg." },
-            new Object[] { "The Lord of the Rings", "J.R.R. Tolkien", "978-0618640157",
-                    "Epic high-fantasy novel that follows hobbits Frodo and Sam as they journey to destroy the One Ring." });
+        // Classic books data for realistic seeding
+        private final List<Object[]> classicBooks = Arrays.asList(
+                        new Object[] { "To Kill a Mockingbird", "Harper Lee", "978-0446310789",
+                                        "Set in the 1930s American South, the story follows young Scout Finch and her father's defense of a Black man accused of rape." },
+                        new Object[] { "1984", "George Orwell", "978-0451524935",
+                                        "A dystopian novel set in a totalitarian society where critical thought is suppressed under a regime of surveillance and propaganda." },
+                        new Object[] { "Pride and Prejudice", "Jane Austen", "978-0141439518",
+                                        "The story follows Elizabeth Bennet as she deals with issues of manners, upbringing, morality, and marriage in early 19th-century England." },
+                        new Object[] { "The Great Gatsby", "F. Scott Fitzgerald", "978-0743273565",
+                                        "Set in the Jazz Age, the novel explores themes of decadence, idealism, resistance to change, and excess." },
+                        new Object[] { "Moby-Dick", "Herman Melville", "978-0142437247",
+                                        "The narrative tells the adventures of wandering sailor Ishmael and his voyage on the whaling ship Pequod, commanded by Captain Ahab." },
+                        new Object[] { "War and Peace", "Leo Tolstoy", "978-0143039990",
+                                        "Chronicles the French invasion of Russia and the impact of the Napoleonic era on Tsarist society." },
+                        new Object[] { "The Catcher in the Rye", "J.D. Salinger", "978-0316769488",
+                                        "The story of Holden Caulfield, a teenage boy dealing with complex issues of identity, belonging, and connection." },
+                        new Object[] { "The Hobbit", "J.R.R. Tolkien", "978-0547928227",
+                                        "The adventures of hobbit Bilbo Baggins as he journeys to the Lonely Mountain with a spirited group of dwarves." },
+                        new Object[] { "Crime and Punishment", "Fyodor Dostoevsky", "978-0143058144",
+                                        "The story of the mental anguish and moral dilemmas of Rodion Raskolnikov, an impoverished ex-student in Saint Petersburg." },
+                        new Object[] { "The Lord of the Rings", "J.R.R. Tolkien", "978-0618640157",
+                                        "Epic high-fantasy novel that follows hobbits Frodo and Sam as they journey to destroy the One Ring." });
 
-    @Bean
-    public CommandLineRunner seedData() {
-        return args -> {
-            // Seed roles first
-            if (roleRepository.findByName(Roles.USER).isEmpty()) {
-                roleRepository.save(Role.builder().name(Roles.USER).build());
-            }
-            if (roleRepository.findByName(Roles.ADMIN).isEmpty()) {
-                roleRepository.save(Role.builder().name(Roles.ADMIN).build());
-            }
+        @Bean
+        public CommandLineRunner seedData() {
+                return args -> {
+                        // Seed roles first
+                        if (roleRepository.findByName(Roles.USER).isEmpty()) {
+                                roleRepository.save(Role.builder().name(Roles.USER).build());
+                        }
+                        if (roleRepository.findByName(Roles.ADMIN).isEmpty()) {
+                                roleRepository.save(Role.builder().name(Roles.ADMIN).build());
+                        }
 
-            // Then seed admin
-            User admin;
-            if (userRepository.findByEmail("admin@bsn.com").isEmpty()) {
-                Role adminRole = roleRepository.findByName(Roles.ADMIN)
-                        .orElseThrow(() -> new EntityNotFoundException("Role not found!"));
-                admin = User.builder()
-                        .firstname("System")
-                        .lastname("Admin")
-                        .email("admin@bsn.com")
-                        .password(passwordEncoder.encode("admin123")) // secure this!
-                        .dateOfBirth(LocalDate.of(1990, 1, 1))
-                        .isEnabled(true)
-                        .isAccountLocked(false)
-                        .roles(List.of(adminRole))
-                        .createdAt(LocalDateTime.now())
-                        .build();
-                userRepository.save(admin);
+                        // Then seed admin
+                        User admin;
+                        if (userRepository.findByEmail("admin@bsn.com").isEmpty()) {
+                                Role adminRole = roleRepository.findByName(Roles.ADMIN)
+                                                .orElseThrow(() -> new EntityNotFoundException("Role not found!"));
+                                admin = User.builder()
+                                                .firstname("System")
+                                                .lastname("Admin")
+                                                .email("admin@bsn.com")
+                                                .password(passwordEncoder.encode("admin123")) // secure this!
+                                                .dateOfBirth(LocalDate.of(1990, 1, 1))
+                                                .isEnabled(true)
+                                                .isAccountLocked(false)
+                                                .roles(List.of(adminRole))
+                                                .createdAt(LocalDateTime.now())
+                                                .build();
+                                userRepository.save(admin);
 
-                var favourite = Favourite
-                        .builder()
-                        .owner(admin)
-                        .createdBy(admin.getEmail())
-                        .name(admin.getUsername())
-                        .createdAt(LocalDateTime.now())
-                        .build();
-                favouriteRepository.save(favourite);
-            } else {
-                admin = userRepository.findByEmail("admin@bsn.com").get();
-            }
+                        } else {
+                                admin = userRepository.findByEmail("admin@bsn.com").get();
+                        }
 
-            Faker faker = new Faker();
-            Random random = new Random();
+                        var adminFavourite = Favourite
+                                        .builder()
+                                        .owner(admin)
+                                        .createdBy(admin.getEmail())
+                                        .name(admin.getUsername())
+                                        .createdAt(LocalDateTime.now())
+                                        .build();
+                        favouriteRepository.save(adminFavourite);
 
-            // Seed users if none exist yet (except admin)
-            List<User> users = new ArrayList<>();
-            if (userRepository.count() <= 1) {
-                var userRole = roleRepository.findByName(Roles.USER)
-                        .orElseThrow(() -> new EntityNotFoundException("Role user not found"));
+                        Faker faker = new Faker();
+                        Random random = new Random();
 
-                for (int i = 0; i < 10; i++) {
-                    var firstname = faker.name().firstName();
-                    var lastname = faker.name().lastName();
-                    var password = firstname + "1234";
-                    var email = firstname.toLowerCase() + "." + lastname.toLowerCase() + "@gmail.com";
-                    LocalDate randomDate = between();
+                        // Seed users if none exist yet (except admin)
+                        List<User> users = new ArrayList<>();
+                        List<Favourite> favourites = new ArrayList<>();
+                        if (userRepository.count() <= 1) {
+                                var userRole = roleRepository.findByName(Roles.USER)
+                                                .orElseThrow(() -> new EntityNotFoundException("Role user not found"));
 
-                    var user = User.builder()
-                            .firstname(firstname)
-                            .lastname(lastname)
-                            .email(email)
-                            .password(passwordEncoder.encode(password))
-                            .roles(List.of(userRole))
-                            .isAccountLocked(false)
-                            .isEnabled(true)
-                            .dateOfBirth(randomDate)
-                            .createdAt(LocalDateTime.now())
-                            .build();
-                    users.add(user);
+                                for (int i = 0; i < 10; i++) {
+                                        var firstname = faker.name().firstName();
+                                        var lastname = faker.name().lastName();
+                                        var password = firstname + "1234";
+                                        var email = firstname.toLowerCase() + "." + lastname.toLowerCase()
+                                                        + "@gmail.com";
+                                        LocalDate randomDate = between();
 
-                    var favourite = Favourite.builder()
-                            .owner(user)
-                            .createdBy(user.getEmail())
-                            .name(user.getUsername())
-                            .createdAt(LocalDateTime.now())
-                            .build();
-                    favouriteRepository.save(favourite);
-                }
-                userRepository.saveAll(users);
-                users = userRepository.findAll();
-            } else {
-                users = userRepository.findAll();
-            }
+                                        var user = User.builder()
+                                                        .firstname(firstname)
+                                                        .lastname(lastname)
+                                                        .email(email)
+                                                        .password(passwordEncoder.encode(password))
+                                                        .roles(List.of(userRole))
+                                                        .isAccountLocked(false)
+                                                        .isEnabled(true)
+                                                        .dateOfBirth(randomDate)
+                                                        .createdAt(LocalDateTime.now())
+                                                        .build();
+                                        users.add(user);
 
-            // Seed books if none exist yet
-            if (bookRepository.count() == 0) {
-                List<Book> books = new ArrayList<>();
+                                        var favourite = Favourite.builder()
+                                                        .owner(user)
+                                                        .createdBy(user.getEmail())
+                                                        .name(user.getUsername())
+                                                        .createdAt(LocalDateTime.now())
+                                                        .build();
+                                        favourites.add(favourite);
+                                }
+                                userRepository.saveAll(users);
 
-                // First, add classic books (reliable data)
-                for (Object[] bookData : classicBooks) {
-                    String title = (String) bookData[0];
-                    String author = (String) bookData[1];
-                    String isbn = (String) bookData[2];
-                    String synopsis = (String) bookData[3];
+                                favouriteRepository.saveAll(favourites);
+                                users = userRepository.findAll();
+                        } else {
+                                users = userRepository.findAll();
+                        }
 
-                    // Assign to random user (including admin)
-                    User randomUser = users.get(random.nextInt(users.size()));
+                        // Seed books if none exist yet
+                        if (bookRepository.count() == 0) {
+                                List<Book> books = new ArrayList<>();
 
-                    Book book = Book.builder()
-                            .title(title)
-                            .authorName(author)
-                            .isbn(isbn)
-                            .synopsis(synopsis)
-                            .bookCover("https://picsum.photos/seed/" + title.replaceAll("\\s+", "") + "/300/400")
-                            .owner(randomUser)
-                            .shareable(random.nextBoolean())
-                            .archived(false)
-                            .createdBy(randomUser.getEmail())
-                            .createdAt(LocalDateTime.now())
-                            .build();
-                    books.add(book);
-                }
+                                // First, add classic books (reliable data)
+                                for (Object[] bookData : classicBooks) {
+                                        String title = (String) bookData[0];
+                                        String author = (String) bookData[1];
+                                        String isbn = (String) bookData[2];
+                                        String synopsis = (String) bookData[3];
 
-                // Then add some random books
-                for (int i = 0; i < 40; i++) {
-                    User randomUser = users.get(random.nextInt(users.size()));
+                                        // Assign to random user (including admin)
+                                        User randomUser = users.get(random.nextInt(users.size()));
 
-                    String title = faker.book().title();
-                    if (title.length() < 5) {
-                        // Add some words for very short titles
-                        title = title + " " + faker.lorem().words(random.nextInt(3) + 1).stream()
-                                .reduce("", (a, b) -> a + " " + b).trim();
-                    }
+                                        Book book = Book.builder()
+                                                        .title(title)
+                                                        .authorName(author)
+                                                        .isbn(isbn)
+                                                        .synopsis(synopsis)
+                                                        .bookCover("./uploads/book_cover.jpg")
+                                                        .owner(randomUser)
+                                                        .shareable(random.nextBoolean())
+                                                        .archived(false)
+                                                        .createdBy(randomUser.getEmail())
+                                                        .createdAt(LocalDateTime.now())
+                                                        .build();
+                                        books.add(book);
+                                }
 
-                    Book book = Book.builder()
-                            .title(title)
-                            .authorName(faker.name().fullName())
-                            .isbn("978-" + faker.number().digits(9))
-                            .synopsis("A captivating tale about " + title.toLowerCase() + " and its impact on readers.")
-                            .bookCover("https://picsum.photos/seed/" + title.replaceAll("\\s+", "") + "/300/400")
-                            .owner(randomUser)
-                            .shareable(random.nextBoolean())
-                            .archived(false)
-                            .createdBy(randomUser.getEmail())
-                            .createdAt(LocalDateTime.now())
-                            .build();
-                    books.add(book);
-                }
+                                // Then add some random books
+                                for (int i = 0; i < 40; i++) {
+                                        User randomUser = users.get(random.nextInt(users.size()));
 
-                bookRepository.saveAll(books);
-            }
-        };
-    }
+                                        String title = faker.book().title();
+                                        if (title.length() < 5) {
+                                                // Add some words for very short titles
+                                                title = title + " "
+                                                                + faker.lorem().words(random.nextInt(3) + 1).stream()
+                                                                                .reduce("", (a, b) -> a + " " + b)
+                                                                                .trim();
+                                        }
 
-    private static LocalDate between() {
-        LocalDate start = LocalDate.of(1989, Month.OCTOBER, 14);
-        LocalDate end = LocalDate.now();
-        long startEpochDay = start.toEpochDay();
-        long endEpochDay = end.toEpochDay();
-        long randomDay = ThreadLocalRandom
-                .current()
-                .nextLong(startEpochDay, endEpochDay);
+                                        Book book = Book.builder()
+                                                        .title(title)
+                                                        .authorName(faker.name().fullName())
+                                                        .isbn("978-" + faker.number().digits(9))
+                                                        .synopsis("A captivating tale about " + title.toLowerCase()
+                                                                        + " and its impact on readers.")
+                                                        .bookCover("./uploads/book_cover.jpg")
+                                                        .owner(randomUser)
+                                                        .shareable(random.nextBoolean())
+                                                        .archived(false)
+                                                        .createdBy(randomUser.getEmail())
+                                                        .createdAt(LocalDateTime.now())
+                                                        .build();
+                                        books.add(book);
+                                }
 
-        return LocalDate.ofEpochDay(randomDay);
-    }
+                                bookRepository.saveAll(books);
+                        }
+                };
+        }
+
+        private static LocalDate between() {
+                LocalDate start = LocalDate.of(1989, Month.OCTOBER, 14);
+                LocalDate end = LocalDate.now();
+                long startEpochDay = start.toEpochDay();
+                long endEpochDay = end.toEpochDay();
+                long randomDay = ThreadLocalRandom
+                                .current()
+                                .nextLong(startEpochDay, endEpochDay);
+
+                return LocalDate.ofEpochDay(randomDay);
+        }
 }
