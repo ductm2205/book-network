@@ -28,4 +28,6 @@ public interface IUserService {
     User getUserByEmail(String email);
 
     PageResponse<User> getAllUsers(int pageNumber, int pageSize);
+
+    PageResponse<User> searchUsers(String query, int pageNumber, int pageSize);
 }

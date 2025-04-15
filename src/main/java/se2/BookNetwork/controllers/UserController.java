@@ -203,4 +203,21 @@ public class UserController {
         redirectAttributes.addFlashAttribute("successMessage", "User deleted successfully.");
         return "redirect:/users/list";
     }
+
+    @GetMapping("/search")
+    public String searchUser(
+            @RequestParam(name = "query") String query,
+            @RequestParam(name = "pageNumber", defaultValue = "0", required = false) int pageNumber,
+            @RequestParam(name = "pageSize", defaultValue = "10", required = false) int pageSize,
+            Model model) {
+        PageResponse<User> users = userService.searchUsers(query, pageNumber, pageSize);
+        model.addAttribute("users", users.getElements());
+        model.addAttribute("currentPage", users.getPageNumber());
+        model.addAttribute("totalPages", users.getTotalPages());
+        model.addAttribute("totalItems", users.getTotalElements());
+        model.addAttribute("pageSize", pageSize);
+        model.addAttribute("title", "Users List");
+
+        return "users/list";
+    }
 }

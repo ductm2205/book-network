@@ -3,6 +3,7 @@ package se2.BookNetwork.services;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -165,6 +166,21 @@ public class UserService implements IUserService {
         user.setAccountLocked(true);
         user.setDeletedAt(LocalDateTime.now());
         userRepository.save(user);
+    }
+
+    @Override
+    public PageResponse<User> searchUsers(String query, int pageNumber, int pageSize) {
+        Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by("firstname").ascending());
+        Page<User> users = userRepository.searchUsers(query, pageable);
+        var usersResponse = users.stream().toList();
+        return new PageResponse<User>(
+                usersResponse,
+                users.getNumber(),
+                users.getSize(),
+                users.getTotalElements(),
+                users.getTotalPages(),
+                users.isFirst(),
+                users.isLast());
     }
 
 }
