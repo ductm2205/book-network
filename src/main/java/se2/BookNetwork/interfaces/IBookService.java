@@ -20,7 +20,9 @@ public interface IBookService {
 
         public List<Book> getAllBooks();
 
-        PageResponse<BookResponse> getAllPaginatedBooks(int pageNumber, int pageSize);
+        public PageResponse<BookResponse> getAllPaginatedBooks(int pageNumber, int pageSize);
+
+        public PageResponse<BookResponse> searchBooks(String query, int pageNumber, int pageSize);
 
         public PageResponse<BookResponse> findAllBooks(int pageNumber, int pageSize, Authentication connectedUser);
 

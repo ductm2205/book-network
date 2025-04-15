@@ -1,6 +1,7 @@
 package se2.BookNetwork.services;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -85,6 +86,7 @@ public class BookService implements IBookService {
         return bookRepository.findAll();
     }
 
+    @Override
     public PageResponse<BookResponse> getAllPaginatedBooks(int pageNumber, int pageSize) {
         Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by("createdAt").descending());
         Page<Book> books = bookRepository.findAllDisplayableBooksForHomePage(pageable);
@@ -321,6 +323,27 @@ public class BookService implements IBookService {
         book.setIsbn(request.getIsbn());
         book.setSynopsis(request.getSynopsis());
         book.setShareable(request.isShareable());
+    }
+
+    @Override
+    public PageResponse<BookResponse> searchBooks(String query, int pageNumber, int pageSize) {
+        Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by("createdAt").descending());
+
+        Page<Book> bookPage = bookRepository.searchBooks(query, pageable);
+
+        List<BookResponse> bookResponses = bookPage.getContent()
+                .stream()
+                .map(bookMapper::toBookResponse)
+                .collect(Collectors.toList());
+
+        return new PageResponse<>(
+                bookResponses,
+                bookPage.getNumber(),
+                bookPage.getSize(),
+                bookPage.getTotalElements(),
+                bookPage.getTotalPages(),
+                bookPage.isFirst(),
+                bookPage.isLast());
     }
 
 }

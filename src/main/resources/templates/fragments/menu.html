@@ -57,10 +57,11 @@
                         </a>
                     </li>
                 </ul>
-                <form class="d-flex search-form me-2" th:action="@{/books/search}" method="GET">
+                <!-- Updated search form with live search functionality -->
+                <form class="d-flex search-form me-2" id="searchForm" th:action="@{/books/search}" method="GET">
                     <div class="input-group">
-                        <input class="form-control" type="search" name="query" placeholder="Find a book..."
-                            aria-label="Search">
+                        <input class="form-control" type="search" name="query" id="searchInput" th:value="${query}"
+                            placeholder="Find a book..." aria-label="Search" autocomplete="off">
                         <button title="search" class="btn btn-search" type="submit">
                             <i class="fas fa-search"></i>
                         </button>

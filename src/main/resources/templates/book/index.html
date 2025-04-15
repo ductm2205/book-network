@@ -29,6 +29,14 @@
                     </div>
                 </div>
             </div>
+            <div th:if="${books == null or #lists.isEmpty(books)}" class="alert alert-danger" role="alert">
+                No books found for your search query "<span th:text="${query}">query</span>". Please try a different
+                search term!
+            </div>
+            <div class="col-12 text-center d-none" id="spinner">
+                <div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span>
+                </div>
+            </div>
         </div>
 
         <!-- Include the pagination fragment -->

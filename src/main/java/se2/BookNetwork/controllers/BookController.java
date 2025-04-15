@@ -66,6 +66,26 @@ public class BookController {
         return "book/index";
     }
 
+    @GetMapping("/search")
+    public String searchBooks(
+            @RequestParam(name = "query") String query,
+            @RequestParam(name = "pageNumber", defaultValue = "0", required = false) int pageNumber,
+            @RequestParam(name = "pageSize", defaultValue = PaginateConstants.DEFAULT_PAGE_SIZE, required = false) int pageSize,
+            @RequestParam(name = "ajax", defaultValue = "false", required = false) boolean isAjaxRequest,
+            Model model) {
+        var books = bookService.searchBooks(query, pageNumber, pageSize);
+        model.addAttribute("books", books.getElements());
+        model.addAttribute("currentPage", books.getPageNumber());
+        model.addAttribute("totalPages", books.getTotalPages());
+        model.addAttribute("totalItems", books.getTotalElements());
+        model.addAttribute("pageSize", pageSize);
+
+        model.addAttribute("query", query);
+        model.addAttribute("activeTab", "books");
+        model.addAttribute("title", "Books");
+        return "book/index";
+    }
+
     @GetMapping("/{id}")
     public String getBookById(
             @PathVariable Integer id,
